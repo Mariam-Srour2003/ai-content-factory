@@ -1,0 +1,59 @@
+# config.yaml
+
+# ----------------------------
+# General Settings
+# ----------------------------
+project:
+  name: ai-content-factory
+  version: 0.1.0
+  environment: development  # or production
+
+# ----------------------------
+# LLM Configuration
+# ----------------------------
+llm:
+  provider: ollama
+  models:
+    primary: llama3.1
+    secondary: mistral7b
+  temperature: 0.7
+  max_tokens: 1500
+  retries: 3
+  timeout_seconds: 30
+
+# ----------------------------
+# Vector Database (ChromaDB)
+# ----------------------------
+vector_db:
+  persist_directory: ./data/chroma
+  collection_names:
+    brand_voice: brand_voice_examples
+    past_content: content_archive
+  embedding_model: sentence-transformers/all-mpnet-base-v2
+
+# ----------------------------
+# SEO Settings
+# ----------------------------
+seo:
+  keyword_min_volume: 100
+  keyword_max_difficulty: 60
+  target_readability: 60
+  brand_tone_match_threshold: 0.8
+
+# ----------------------------
+# File Paths
+# ----------------------------
+paths:
+  logs: ./logs/
+  outputs: ./outputs/
+  datasets: ./datasets/
+  cache: ./.cache/
+
+# ----------------------------
+# Logging Configuration
+# ----------------------------
+logging:
+  level: INFO
+  log_file: ./logs/app.log
+  rotation: 10MB
+  retention: 7 days
