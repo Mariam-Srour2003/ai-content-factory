@@ -1,0 +1,17 @@
+# src/ai_content_factory/config/.yaml
+brand_voice:
+  tone:
+    - formal
+    - casual
+    - technical
+    - urgent
+  tone_examples:
+    formal: 
+      - "Please ensure that your response is both thorough and precise."
+    casual: 
+      - "Hey, just a heads-up, let's keep things relaxed and friendly."
+    technical:
+      - "Ensure that all parameters are correctly initialized before proceeding."
+    urgent:
+      - "This system is critical, please address the issues immediately."
+  consistency_threshold: 0.3
