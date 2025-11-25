@@ -1,10 +1,12 @@
 """Ollama LLM provider for local model inference."""
 
+import time
 from typing import Optional
 
 import requests
 
 from ..config.config_loader import load_config
+from ..utils.exceptions import APIError
 from ..utils.logger import get_logger
 
 logger = get_logger(__name__)
@@ -30,9 +32,15 @@ class OllamaProvider:
         """
         self.config = load_config()
         self.base_url = base_url
-        self.model = model or "gemma3:1b"
+        self.model = model or self.config.llm.models.primary
         self.temperature = temperature if temperature is not None else self.config.llm.temperature
         self.max_tokens = max_tokens if max_tokens is not None else self.config.llm.max_tokens
+
+        # Validate parameters
+        if not (0 <= self.temperature <= 1):
+            raise ValueError(f"Temperature must be 0-1, got {self.temperature}")
+        if self.max_tokens <= 0:
+            raise ValueError(f"max_tokens must be positive, got {self.max_tokens}")
 
         # Verify Ollama is running and model is available
         self._verify_connection()
@@ -101,29 +109,42 @@ class OllamaProvider:
             "stream": False
         }
 
-        try:
-            logger.debug(f"Generating with prompt length: {len(prompt)} chars")
+        max_retries = getattr(self.config.llm, 'retries', 3)
 
-            response = requests.post(
-                f"{self.base_url}/api/generate",
-                json=payload,
-                timeout=self.config.llm.timeout_seconds
-            )
-            response.raise_for_status()
+        for attempt in range(max_retries):
+            try:
+                logger.debug(f"Generating (attempt {attempt + 1}/{max_retries}), prompt length: {len(prompt)} chars")
 
-            result = response.json()
-            generated_text = result.get("response", "")
+                response = requests.post(
+                    f"{self.base_url}/api/generate",
+                    json=payload,
+                    timeout=self.config.llm.timeout_seconds
+                )
+                response.raise_for_status()
 
-            logger.debug(f"Generated {len(generated_text)} chars")
+                result = response.json()
+                generated_text = result.get("response", "")
 
-            return generated_text.strip()
+                logger.debug(f"Generated {len(generated_text)} chars")
+                return generated_text.strip()
 
-        except requests.exceptions.Timeout:
-            logger.error(f"Ollama request timed out after {self.config.llm.timeout_seconds}s")
-            raise RuntimeError("LLM generation timed out")
-        except requests.exceptions.RequestException as e:
-            logger.error(f"Ollama API error: {str(e)}")
-            raise RuntimeError(f"LLM generation failed: {str(e)}")
+            except requests.exceptions.Timeout:
+                if attempt < max_retries - 1:
+                    wait_time = 2 ** attempt  # Exponential backoff: 1s, 2s, 4s
+                    logger.warning(f"Request timed out, retrying in {wait_time}s...")
+                    time.sleep(wait_time)
+                else:
+                    logger.error(f"Ollama request timed out after {max_retries} attempts")
+                    raise APIError("LLM generation timed out after all retries")
+
+            except requests.exceptions.RequestException as e:
+                if attempt < max_retries - 1:
+                    wait_time = 2 ** attempt
+                    logger.warning(f"Request failed: {str(e)}, retrying in {wait_time}s...")
+                    time.sleep(wait_time)
+                else:
+                    logger.error(f"Ollama API error after {max_retries} attempts: {str(e)}")
+                    raise APIError(f"LLM generation failed: {str(e)}")
 
     def chat(
         self,
