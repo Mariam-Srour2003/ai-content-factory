@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Content Factory</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    <link rel="stylesheet" href="/static/styles.css">
+</head>
+<body>
+    <div id="app" class="min-h-screen bg-slate-50">
+        <!-- Header -->
+        <header class="header">
+            <div class="header-content">
+                <div class="header-left">
+                    <div class="logo-container">
+                        <svg class="logo-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/>
+                        </svg>
+                    </div>
+                    <div>
+                        <h1 class="header-title">Content Factory</h1>
+                        <p class="header-subtitle">AI-Powered Content Generation</p>
+                    </div>
+                </div>
+                <button onclick="toggleMenu()" class="menu-toggle" id="menuToggle">
+                    <svg class="menu-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/>
+                    </svg>
+                </button>
+            </div>
+        </header>
+
+        <div class="main-layout">
+            <!-- Sidebar -->
+            <aside class="sidebar" id="sidebar">
+                <nav class="nav-menu">
+                    <button class="nav-item active" onclick="switchTab('dashboard')" data-tab="dashboard">
+                        <svg class="nav-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/>
+                        </svg>
+                        <span>Dashboard</span>
+                    </button>
+                    <button class="nav-item" onclick="switchTab('create')" data-tab="create">
+                        <svg class="nav-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
+                        </svg>
+                        <span>Create Content</span>
+                    </button>
+                    <button class="nav-item" onclick="switchTab('library')" data-tab="library">
+                        <svg class="nav-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/>
+                        </svg>
+                        <span>Content Library</span>
+                    </button>
+                    <button class="nav-item" onclick="switchTab('analytics')" data-tab="analytics">
+                        <svg class="nav-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 8v8m-4-5v5m-4-2v2m-2 4h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+                        </svg>
+                        <span>Analytics</span>
+                    </button>
+                    <button class="nav-item" onclick="switchTab('settings')" data-tab="settings">
+                        <svg class="nav-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+                        </svg>
+                        <span>Settings</span>
+                    </button>
+                </nav>
+            </aside>
+
+            <!-- Main Content -->
+            <main class="main-content">
+                <!-- Dashboard Tab -->
+                <div id="dashboard-tab" class="tab-content active">
+                    <div class="tab-header">
+                        <h2 class="tab-title">Dashboard</h2>
+                        <button onclick="showCreateModal()" class="btn-primary">
+                            <svg class="btn-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
+                            </svg>
+                            Generate Content
+                        </button>
+                    </div>
+
+                    <div class="kpi-grid" id="kpiGrid">
+                        <!-- KPIs will be loaded here -->
+                    </div>
+
+                    <div class="charts-grid">
+                        <div class="card">
+                            <h3 class="card-title">Quality & Brand Voice Metrics</h3>
+                            <canvas id="performanceChart"></canvas>
+                        </div>
+                        <div class="card">
+                            <h3 class="card-title">Readability & Generation Time</h3>
+                            <canvas id="rankingChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Create Content Tab -->
+                <div id="create-tab" class="tab-content">
+                    <h2 class="tab-title">Generate New Content</h2>
+                    <div class="card form-card">
+                        <form id="contentForm" onsubmit="generateContent(event)">
+                            <div class="form-group">
+                                <label class="form-label">Topic / Keyword</label>
+                                <input type="text" name="topic" class="form-input" placeholder="e.g., How to implement AI in marketing" required>
+                            </div>
+
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label class="form-label">Content Type</label>
+                                    <select name="content_type" class="form-input">
+                                        <option>Blog Post</option>
+                                        <option>Case Study</option>
+                                        <option>Whitepaper</option>
+                                        <option>Guide</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label">Word Count</label>
+                                    <select name="word_count" class="form-input">
+                                        <option value="1500">1500-2000</option>
+                                        <option value="2000">2000-2500</option>
+                                        <option value="2500">2500-3000</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label class="form-label">Target Keyword</label>
+                                <input type="text" name="target_keyword" class="form-input" placeholder="Primary keyword to optimize for" required>
+                            </div>
+
+                            <div class="form-group">
+                                <label class="form-label">Brand Voice</label>
+                                <select name="brand_voice" class="form-input">
+                                    <option value="Professional">Professional</option>
+                                    <option value="Friendly">Friendly</option>
+                                    <option value="Conversational">Conversational</option>
+                                    <option value="Technical">Technical</option>
+                                </select>
+                            </div>
+
+                            <div class="form-group">
+                                <label class="form-label">Target Audience</label>
+                                <input type="text" name="target_audience" class="form-input" placeholder="e.g., Marketing professionals, Business owners" value="General">
+                            </div>
+
+                            <div class="form-group">
+                                <label class="form-label">Additional Keywords (Optional)</label>
+                                <input type="text" name="additional_keywords" class="form-input" placeholder="Separate with commas">
+                            </div>
+
+                            <button type="submit" class="btn-primary btn-full">
+                                <svg class="btn-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/>
+                                </svg>
+                                Generate Content
+                            </button>
+                        </form>
+                    </div>
+                </div>
+
+                <!-- Content Library Tab -->
+                <div id="library-tab" class="tab-content">
+                    <div class="tab-header">
+                        <h2 class="tab-title">Content Library</h2>
+                        <input type="text" id="searchInput" class="search-input" placeholder="Search content..." onkeyup="filterContent()">
+                    </div>
+
+                    <div class="card table-card">
+                        <div class="table-container">
+                            <table class="content-table">
+                                <thead>
+                                    <tr>
+                                        <th>Title</th>
+                                        <th>Status</th>
+                                        <th>Leads</th>
+                                        <th>Ranking</th>
+                                        <th>Date</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="contentTableBody">
+                                    <!-- Content will be loaded here -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Analytics Tab -->
+                <div id="analytics-tab" class="tab-content">
+                    <h2 class="tab-title">Analytics & Insights</h2>
+                    <div class="analytics-grid">
+                        <div class="card">
+                            <h3 class="card-subtitle">Top Performing Topics</h3>
+                            <div id="topTopics" class="metric-list">
+                                <!-- Topics will be loaded here -->
+                            </div>
+                        </div>
+
+                        <div class="card">
+                            <h3 class="card-subtitle">Content Status</h3>
+                            <div id="statusBreakdown" class="metric-list">
+                                <!-- Status breakdown will be loaded here -->
+                            </div>
+                        </div>
+
+                        <div class="card">
+                            <h3 class="card-subtitle">Efficiency Metrics</h3>
+                            <div id="efficiencyMetrics" class="metric-list">
+                                <div class="metric-row">
+                                    <span>Avg. Time/Post</span>
+                                    <span class="metric-value">3.2 min</span>
+                                </div>
+                                <div class="metric-row">
+                                    <span>Cost/Post</span>
+                                    <span class="metric-value">$12.50</span>
+                                </div>
+                                <div class="metric-row">
+                                    <span>Quality Score</span>
+                                    <span class="metric-value">94%</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Settings Tab -->
+                <div id="settings-tab" class="tab-content">
+                    <h2 class="tab-title">Settings</h2>
+                    <div class="card form-card">
+                        <form id="settingsForm" onsubmit="saveSettings(event)">
+                            <div class="settings-section">
+                                <h3 class="settings-title">LLM Configuration</h3>
+                                <div class="form-group">
+                                    <label class="form-label">Model</label>
+                                    <input type="text" name="llm_model" class="form-input" id="llmModel">
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label">Temperature</label>
+                                    <input type="number" name="temperature" class="form-input" step="0.1" min="0" max="2" id="temperature">
+                                </div>
+                            </div>
+
+                            <div class="settings-section">
+                                <h3 class="settings-title">Content Preferences</h3>
+                                <label class="checkbox-label">
+                                    <input type="checkbox" name="auto_publish" id="autoPublish">
+                                    <span>Auto-publish on approval</span>
+                                </label>
+                                <label class="checkbox-label">
+                                    <input type="checkbox" name="generate_social" id="generateSocial">
+                                    <span>Generate social repurposing</span>
+                                </label>
+                                <label class="checkbox-label">
+                                    <input type="checkbox" name="require_fact_check" id="requireFactCheck">
+                                    <span>Require fact-checking before publish</span>
+                                </label>
+                            </div>
+
+                            <button type="submit" class="btn-primary btn-full">Save Settings</button>
+                        </form>
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <!-- Generation Progress Modal -->
+    <div id="progressModal" class="modal">
+        <div class="modal-content">
+            <h3 class="modal-title">Generating Content</h3>
+            <div class="progress-container">
+                <div class="progress-bar">
+                    <div class="progress-fill" id="progressFill"></div>
+                </div>
+                <p class="progress-message" id="progressMessage">Initializing...</p>
+            </div>
+            <button onclick="closeProgressModal()" class="btn-secondary" id="closeProgressBtn" style="display: none;">Close</button>
+        </div>
+    </div>
+
+    <!-- Content View Modal -->
+    <div id="contentModal" class="modal">
+        <div class="modal-content modal-large">
+            <div class="modal-header">
+                <h3 class="modal-title" id="contentModalTitle">Content</h3>
+                <button onclick="closeContentModal()" class="modal-close">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div id="contentModalBody"></div>
+            </div>
+        </div>
+    </div>
+
+    <script src="/static/app.js"></script>
+</body>
+</html>
