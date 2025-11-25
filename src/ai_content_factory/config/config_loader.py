@@ -54,7 +54,9 @@ def load_config(path: str = "config.yaml"):
     except FileNotFoundError as e:
         raise ConfigurationError(f"Failed to load configuration: {e}") from e
 
-    print(f"Raw YAML data: {data}")  # Debug logging
+    from ..utils.logger import get_logger
+    logger = get_logger(__name__)
+    logger.debug(f"Loaded YAML data from {config_path}")
 
     # Backwards-compatible normalization: allow "llm.model" or "llm.models"
     llm = data.get("llm", {})
@@ -71,8 +73,15 @@ def load_config(path: str = "config.yaml"):
         raise ConfigurationError(f"Failed to load configuration: {e}") from e
 
     base_dir = Path(__file__).resolve().parent.parent
-    config.vector_db.persist_directory = str((base_dir / config.vector_db.persist_directory).resolve())
-
-    print(f"Loaded persist_directory: {config.vector_db.persist_directory}")
+    persist_path = (base_dir / config.vector_db.persist_directory).resolve()
+    config.vector_db.persist_directory = str(persist_path)
+    
+    # Validate and create directory if needed
+    try:
+        persist_path.mkdir(parents=True, exist_ok=True)
+    except (PermissionError, OSError) as e:
+        raise ConfigurationError(f"Cannot create persist_directory at {persist_path}: {e}") from e
+    
+    logger.info(f"Vector DB persist directory: {config.vector_db.persist_directory}")
 
     return config
