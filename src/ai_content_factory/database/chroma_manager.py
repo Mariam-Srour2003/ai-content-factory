@@ -8,6 +8,9 @@ from langchain_chroma.vectorstores import Chroma
 from langchain_ollama import OllamaEmbeddings
 
 from ..config.config_loader import load_config
+from ..utils.logger import get_logger
+
+logger = get_logger(__name__)
 
 # Singleton pattern to prevent multiple clients for same path
 _client_instances = {}
@@ -32,7 +35,7 @@ class VectorStoreHybrid:
         # LangChain embedding wrapper for retrieval usage
         self.lc_embedding = OllamaEmbeddings(model=settings.embedding_model)
 
-        print(f"✓ Chroma PersistentClient + LangChain adapter initialized at: {self.persist_dir}")
+        logger.info(f"ChromaDB initialized at: {self.persist_dir}")
 
     # example admin method that uses chromadb directly
     def list_collections(self) -> List[str]:
@@ -49,12 +52,29 @@ class VectorStoreHybrid:
         return len(texts)
 
     def query(self, collection_name: str, query_text: str, k: int = 5):
-        vs = Chroma(
-            collection_name=collection_name,
-            embedding_function=self.lc_embedding,
-            client=self.client  # Reuse existing client
-        )
-        return vs.similarity_search(query_text, k=k)
+        # Validate collection exists
+        available = self.list_collections()
+        if collection_name not in available:
+            logger.warning(f"Collection '{collection_name}' not found. Available: {available}")
+            return []  # Return empty results instead of failing
+
+        # Validate parameters
+        if not query_text or len(query_text.strip()) == 0:
+            logger.warning("Empty query text provided")
+            return []
+        if k <= 0:
+            raise ValueError(f"k must be positive, got {k}")
+
+        try:
+            vs = Chroma(
+                collection_name=collection_name,
+                embedding_function=self.lc_embedding,
+                client=self.client  # Reuse existing client
+            )
+            return vs.similarity_search(query_text, k=k)
+        except Exception as e:
+            logger.error(f"Error querying collection '{collection_name}': {str(e)}")
+            return []  # Graceful degradation
 
     # raw ops still available if needed:
     def delete_collection(self, name: str):
