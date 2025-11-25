@@ -1,24 +1,34 @@
-"""Content Writer Agent - Generates SEO-optimized blog posts."""
+"""
+LangChain/LangGraph-based Content Writer Agent
+Refactored for multi-agent workflow compatibility using LangGraph state machines.
+"""
 
 from dataclasses import dataclass
-from typing import Dict, List, Optional, TypedDict
+from pathlib import Path
+from typing import Any, Dict, List, Optional, TypedDict
+
+from langgraph.graph import END, StateGraph
 
 from ..config.config_loader import load_config
 from ..database.chroma_manager import VectorStoreHybrid
+from ..llm.ollama_provider import OllamaProvider
+from ..utils.exceptions import ContentGenerationError
+from ..utils.logger import get_logger
+
+logger = get_logger(__name__)
+
+# Content generation constants
+INTRO_WORD_RATIO = 0.12
+CONCLUSION_WORD_RATIO = 0.10
+BODY_WORD_RATIO = 0.78
+WORDS_PER_SECTION = 250
+MIN_SECTIONS = 3
+MAX_SECTIONS = 7
+KEYWORD_FREQUENCY = 300  # 1 keyword per N words (increased from 250 to target ~1.5% density)
+DEFAULT_BRAND_VOICE = "Direct, educational, accessible. Example: 'Skin is a complex organ. Your skincare doesn't have to be.'"
 
 
-# Type definitions for article structure
-class ContentBrief(TypedDict):
-    """Content brief structure."""
-    primary_keyword: str
-    secondary_keywords: List[str]
-    target_word_count: int
-    search_intent: str
-    recommended_headings: List[str]
-    meta_title: str
-    meta_description: str
-
-
+# Type definitions for article structure (maintained for metrics compatibility)
 @dataclass
 class ArticleSection:
     """Represents a section of the article."""
@@ -42,711 +52,837 @@ class Article:
     html_content: Optional[str] = None
 
 
+# LangGraph State Definition
+class ContentState(TypedDict):
+    """State object passed between nodes in the content generation workflow."""
+
+    # Input fields
+    topic: str
+    target_keyword: str
+    target_word_count: int
+    target_audience: str
+    content_type: str
+
+    # Intermediate state
+    brand_voice_context: str
+    outline: Dict[str, Any]
+    sections: List[Dict[str, str]]  # List of sections (no operator.add)
+    introduction: str
+    conclusion: str
+    cta: str
+
+    # Final output
+    article: str
+    meta_description: str
+    meta_keywords: List[str]
+
+    # Control flow
+    current_section_index: int
+    total_sections: int
+    error: Optional[str]
+
+
 class ContentWriterAgent:
-    """Agent responsible for generating SEO-optimized content in brand voice."""
+    """
+    LangChain/LangGraph-based content writer agent for AI Content Factory.
 
-    def __init__(self, llm_provider=None):
-        """Initialize the Content Writer Agent.
+    Uses LangGraph StateGraph to orchestrate multi-step content generation workflow:
+    1. Retrieve brand voice context from ChromaDB
+    2. Generate article outline
+    3. Write introduction
+    4. Write body sections (loop)
+    5. Write conclusion
+    6. Generate call-to-action
+    7. Assemble final article
+    8. Optimize for SEO
 
-        Args:
-            llm_provider: Optional LLM provider (if None, needs to be set up separately)
-        """
+    Designed for integration into multi-agent workflows (SEO Strategy Agent, Editor Agent, etc.)
+    """
+
+    def __init__(self):
+        """Initialize the content writer agent with LangGraph workflow."""
         self.config = load_config()
-        self.db_manager = VectorStoreHybrid()
-        self.llm = llm_provider
-        self._brand_voice_cache = {}  # Cache for performance
-        self.system_prompt = """You are an expert content writer specializing in SEO-optimized,
-brand-voice content. Write in a direct, conversational, simple style that's easy to understand.
+        self.chroma = VectorStoreHybrid()
+        self.llm = OllamaProvider()  # OllamaProvider loads config internally
 
-WRITING RULES:
-- Use 8th-9th grade reading level (Flesch score 60-70)
-- Keep sentences under 20 words
-- Use simple words (avoid jargon unless explained)
-- One idea per sentence
-- Short paragraphs (2-3 sentences max)
+        # Build the LangGraph workflow
+        self.workflow = self._build_workflow()
+        self.app = self.workflow.compile()
 
-Match this tone: "Skin is a complex organ. Your skincare doesn't have to be."""
+        logger.info("ContentWriterAgent initialized with LangGraph workflow")
 
-        print("✓ Content Writer Agent initialized")
-        print(f"  • Vector DB: {self.db_manager.persist_dir}")
-        print(f"  • Collections available: {self.db_manager.list_collections()}")
-
-    def _generate_with_llm(
-        self,
-        prompt: str,
-        system_prompt: Optional[str] = None,
-        temperature: float = 0.7
-    ) -> str:
-        """Generate text using the LLM provider.
-
-        Args:
-            prompt: The user prompt
-            system_prompt: Optional system prompt (uses default if None)
-            temperature: Temperature for generation
-        Returns:
-            Generated text
+    def _build_workflow(self) -> StateGraph:
         """
-        if self.llm is None:
-            raise RuntimeError(
-                "LLM provider not set. Initialize ContentWriterAgent with an LLM provider, "
-                "or set agent.llm to a provider that has a generate() method."
-            )
+        Build the LangGraph StateGraph workflow for content generation.
 
-        sys_prompt = system_prompt or self.system_prompt
+        Returns:
+            StateGraph: Compiled workflow graph
+        """
+        workflow = StateGraph(ContentState)
 
-        # Check if LLM has expected interface
-        if hasattr(self.llm, 'generate'):
-            return self.llm.generate(
-                prompt=prompt,
-                system_prompt=sys_prompt,
-                temperature=temperature
-            )
-        elif hasattr(self.llm, '__call__'):
-            # Fallback for callable LLMs
-            return self.llm(f"{sys_prompt}\n\n{prompt}")
-        else:
-            raise RuntimeError(
-                f"LLM provider {type(self.llm)} doesn't have generate() or __call__() method"
-            )
+        # Add nodes for each step
+        workflow.add_node("retrieve_brand_voice", self._retrieve_brand_voice_node)
+        workflow.add_node("generate_outline", self._generate_outline_node)
+        workflow.add_node("write_introduction", self._write_introduction_node)
+        workflow.add_node("write_section", self._write_section_node)
+        workflow.add_node("write_conclusion", self._write_conclusion_node)
+        workflow.add_node("generate_cta", self._generate_cta_node)
+        workflow.add_node("assemble_article", self._assemble_article_node)
+        workflow.add_node("optimize_seo", self._optimize_seo_node)
 
-    # ========================================================================
-    # STEP 1: Brand Voice Retrieval (RAG)
-    # ========================================================================
+        # Define the workflow edges
+        workflow.set_entry_point("retrieve_brand_voice")
+        workflow.add_edge("retrieve_brand_voice", "generate_outline")
+        workflow.add_edge("generate_outline", "write_introduction")
+        workflow.add_edge("write_introduction", "write_section")
 
-    def get_brand_voice_examples(
+        # Conditional edge for section loop
+        workflow.add_conditional_edges(
+            "write_section",
+            self._should_continue_sections,
+            {
+                "continue": "write_section",
+                "done": "write_conclusion"
+            }
+        )
+
+        workflow.add_edge("write_conclusion", "generate_cta")
+        workflow.add_edge("generate_cta", "assemble_article")
+        workflow.add_edge("assemble_article", "optimize_seo")
+        workflow.add_edge("optimize_seo", END)
+
+        return workflow
+
+    def generate_article(
         self,
         topic: str,
+        target_keyword: str,
+        target_word_count: int = 1000,
+        target_audience: str = "general readers",
         content_type: str = "blog_post",
-        n_examples: int = 3
-    ) -> str:
-        """Retrieve similar brand voice examples from ChromaDB.
-
-        This is RAG (Retrieval Augmented Generation) - we find existing
-        examples of our brand voice to help the LLM match our style.
+        output_path: Optional[str] = None
+    ) -> Article:
+        """
+        Generate a complete article using the LangGraph workflow.
 
         Args:
-            topic: The topic we're writing about
-            content_type: Type of content (blog_post, product_description, etc.)
-            n_examples: Number of examples to retrieve
+            topic: Article topic
+            target_keyword: Primary SEO keyword
+            target_word_count: Target word count (default 1000)
+            target_audience: Target audience description
+            content_type: Type of content (blog_post, guide, tutorial, etc.)
+            output_path: Optional path to save the article markdown
 
         Returns:
-            Formatted string with examples to include in prompt
+            Article object containing all content and metadata
         """
-        # Check cache first
-        cache_key = f"{topic}_{content_type}_{n_examples}"
-        if cache_key in self._brand_voice_cache:
-            return self._brand_voice_cache[cache_key]
+        # Validate inputs
+        if not topic or not isinstance(topic, str) or len(topic.strip()) == 0:
+            raise ValueError("Topic must be a non-empty string")
+        if not target_keyword or not isinstance(target_keyword, str) or len(target_keyword.strip()) == 0:
+            raise ValueError("Target keyword must be a non-empty string")
+        if target_word_count <= 0:
+            raise ValueError(f"Target word count must be positive, got {target_word_count}")
+        if target_word_count > 10000:
+            logger.warning(f"Very large word count requested: {target_word_count}. Generation may take significant time.")
 
+        # Sanitize inputs to prevent injection
+        topic = topic.strip()[:500]  # Limit length
+        target_keyword = target_keyword.strip()[:100]
+        target_audience = target_audience.strip()[:200] if target_audience else "general readers"
+
+        logger.info(f"Starting article generation - Topic: {topic[:50]}..., Keyword: {target_keyword}, Target: {target_word_count} words")
+
+        # Initialize state
+        initial_state: ContentState = {
+            "topic": topic,
+            "target_keyword": target_keyword,
+            "target_word_count": target_word_count,
+            "target_audience": target_audience,
+            "content_type": content_type,
+            "brand_voice_context": "",
+            "outline": {},
+            "sections": [],
+            "introduction": "",
+            "conclusion": "",
+            "cta": "",
+            "article": "",
+            "meta_description": "",
+            "meta_keywords": [],
+            "current_section_index": 0,
+            "total_sections": 0,
+            "error": None
+        }
+
+        # Execute the workflow
         try:
-            # Get the collection name from config
+            final_state = self.app.invoke(initial_state)
+
+            if final_state.get("error"):
+                logger.error(f"Error in workflow: {final_state['error']}")
+                raise ContentGenerationError(final_state["error"])
+
+            logger.info("Article generation completed successfully")
+
+            # Convert state to Article object
+            article = self._state_to_article(final_state)
+
+            # Save to file if output path provided
+            if output_path:
+                self._save_article(article, output_path)
+
+            return article
+
+        except ContentGenerationError:
+            # Already logged, just re-raise
+            raise
+        except Exception as e:
+            logger.error(f"Unexpected error executing workflow: {str(e)}", exc_info=True)
+            raise ContentGenerationError(f"Article generation failed: {str(e)}") from e
+
+    def _state_to_article(self, state: ContentState) -> Article:
+        """
+        Convert workflow state to Article dataclass.
+
+        Args:
+            state: Final workflow state
+
+        Returns:
+            Article object with all content
+        """
+        # Parse sections from state
+        article_sections = []
+        for section_data in state["sections"]:
+            # Extract content without heading
+            content = section_data["content"]
+            lines = content.split('\n')
+            heading_line = ""
+            content_lines = []
+
+            for line in lines:
+                if line.startswith("## "):
+                    heading_line = line.replace("## ", "").strip()
+                elif line.strip():
+                    content_lines.append(line)
+
+            section_content = '\n'.join(content_lines).strip()
+
+            article_sections.append(ArticleSection(
+                heading=heading_line or section_data["title"],
+                level=2,
+                content=section_content,
+                word_count=len(section_content.split())
+            ))
+
+        # Calculate total word count
+        total_words = len(state["article"].split())
+
+        return Article(
+            title=state["topic"],
+            meta_description=state["meta_description"],
+            introduction=state["introduction"],
+            sections=article_sections,
+            conclusion=state["conclusion"],
+            call_to_action=state["cta"],
+            total_word_count=total_words,
+            markdown_content=state["article"]
+        )
+
+    def _save_article(self, article: Article, output_path: str) -> None:
+        """
+        Save article to markdown file.
+
+        Args:
+            article: Article to save
+            output_path: Path to save the file
+        """
+        path = Path(output_path)
+        path.parent.mkdir(parents=True, exist_ok=True)
+
+        with open(path, 'w', encoding='utf-8') as f:
+            f.write(article.markdown_content)
+            f.write("\n\n---\n\n")
+            f.write(f"**Meta Description:** {article.meta_description}\n")
+
+        logger.info(f"Article saved to {output_path}")
+
+    # ========== Workflow Node Functions ==========
+
+    def _clean_meta_text(self, text: str) -> str:
+        """Clean up meta-text artifacts from LLM output.
+
+        Removes phrases like 'Okay, here's...', 'Here's a...', quotes, and other meta-commentary.
+
+        Args:
+            text: Raw LLM output
+
+        Returns:
+            Cleaned text
+        """
+        import re
+
+        # Remove common meta-text patterns
+        patterns = [
+            r'^\s*Okay,?\s+here[\'\'\"s]+ (an? )?\w+.*?:\s*',  # "Okay, here's an introduction:"
+            r'^\s*Here[\'\'\"s]+ (an? )?\w+.*?:\s*',  # "Here's a section:"
+            r'^\s*[\"\']+(.*?)[\"\']+\s*$',  # Wrapping quotes
+            r'\n\n---\n\n\*\*Word Count:\*\*.*',  # Word count notes
+            r'^\s*\[.*?\]\s*',  # [Link to...]
+        ]
+
+        for pattern in patterns:
+            text = re.sub(pattern, '', text, flags=re.IGNORECASE | re.DOTALL | re.MULTILINE)
+        return text.strip()
+
+    def _retrieve_brand_voice_node(self, state: ContentState) -> ContentState:
+        """
+        Node 1: Retrieve relevant brand voice context from ChromaDB.
+
+        Uses semantic search to find brand voice samples similar to the topic.
+        """
+        try:
+            logger.info("Retrieving brand voice context")
+
+            # Get collection name from config
             collection_names = self.config.vector_db.collection_names
             collection_name = collection_names.get("brand_voice", "brand_voice_examples")
 
             # Check if collection exists
-            available_collections = self.db_manager.list_collections()
+            available_collections = self.chroma.list_collections()
             if collection_name not in available_collections:
-                print(f"⚠️  Collection '{collection_name}' not found. Available: {available_collections}")
-                return ""
+                logger.warning(f"Collection '{collection_name}' not found. Available: {available_collections}")
+                state["brand_voice_context"] = ""
+                return state
 
-            # Query ChromaDB for similar brand voice examples using the database manager
-            results = self.db_manager.query(
+            # Query ChromaDB for similar brand voice samples
+            results = self.chroma.query(
                 collection_name=collection_name,
-                query_text=topic,
-                k=n_examples
+                query_text=state["topic"],
+                k=3
             )
 
-            # Format examples for prompt
-            if not results:
-                print("⚠️  No brand voice examples found, using defaults")
-                return ""
+            # Format context from results
+            if results:
+                context_pieces = []
+                for i, doc in enumerate(results):
+                    title = doc.metadata.get('title', 'Untitled')
+                    context_pieces.append(f"Example {i+1} - {title}:\n{doc.page_content}")
 
-            examples_text = "\n\n".join([
-                f"Example {i+1} - {doc.metadata.get('title', 'Untitled')}:\n{doc.page_content}"
-                for i, doc in enumerate(results)
-            ])
-
-            print(f"✓ Retrieved {len(results)} brand voice examples")
-            return examples_text
-
-        except Exception as e:
-            print(f"⚠️  Error retrieving brand voice: {str(e)}")
-            return ""
-
-    # ========================================================================
-    # STEP 2: Outline Generation
-    # ========================================================================
-
-    def generate_outline(self, brief: ContentBrief) -> List[Dict[str, any]]:
-        """Generate article outline from content brief.
-
-        This creates the structure of the article - what sections to include,
-        in what order, and how many words each should be.
-
-        Args:
-            brief: Content brief from SEO Strategy Agent
-
-        Returns:
-            List of sections with headings and target word counts
-        """
-        print("\n📝 Generating article outline...")
-
-        # Validate and fix meta description first
-        brief = self._validate_and_fix_meta(brief)
-
-        # Get brand voice examples
-        self.get_brand_voice_examples(
-            topic=brief['primary_keyword'],
-            content_type="blog_post"
-        )        # Build prompt for outline generation with simpler approach
-        # Calculate word distribution
-        total_words = brief['target_word_count']
-        intro_words = int(total_words * 0.12)  # 12%
-        conclusion_words = int(total_words * 0.10)  # 10%
-        body_words = total_words - intro_words - conclusion_words
-
-        num_sections = len(brief['recommended_headings'])
-        words_per_section = body_words // num_sections if num_sections > 0 else body_words
-
-        # Create structured outline directly
-        outline_sections = []
-        for heading in brief['recommended_headings']:
-            outline_sections.append({
-                "heading": heading,
-                "level": 2,
-                "target_word_count": words_per_section,
-                "key_points": [
-                    f"Explain {heading.lower()}",
-                    "Include examples",
-                    "Use simple language"
-                ]
-            })
-
-        # Fix heading hierarchy
-        outline_sections = self._fix_heading_hierarchy(outline_sections)
-
-        print(f"✓ Generated outline with {len(outline_sections)} sections")
-        return outline_sections
-
-    def _validate_and_fix_meta(self, brief: ContentBrief) -> ContentBrief:
-        """Ensure meta description meets SEO requirements.
-
-        Args:
-            brief: Content brief to validate
-
-        Returns:
-            Updated brief with valid meta description
-        """
-        meta = brief['meta_description']
-        keyword = brief['primary_keyword']
-
-        # Check length (120-160 chars)
-        if not (120 <= len(meta) <= 160):
-            print(f"  ⚠️  Meta description length: {len(meta)} (target: 120-160)")
-            if len(meta) < 120:
-                # Expand
-                meta = f"{meta} Learn about {keyword} and improve your skincare routine."
-            elif len(meta) > 160:
-                # Truncate smartly
-                meta = meta[:157] + "..."
-            brief['meta_description'] = meta
-
-        # Check keyword presence
-        if keyword.lower() not in meta.lower():
-            print(f"  ⚠️  Adding keyword '{keyword}' to meta description")
-            # Add keyword at the start if there's room
-            if len(meta) < 140:
-                meta = f"{keyword}: {meta}"
+                state["brand_voice_context"] = "\n\n".join(context_pieces)
+                logger.info(f"Retrieved {len(results)} brand voice examples")
             else:
-                # Replace some text with keyword
-                meta = f"{keyword}. {meta[len(keyword)+2:]}"
-            meta = meta[:160]  # Ensure we don't exceed limit
-            brief['meta_description'] = meta
+                logger.warning(f"No brand voice found for topic: {state['topic']}. Using default.")
+                state["brand_voice_context"] = DEFAULT_BRAND_VOICE
 
-        return brief
+        except (KeyError, ValueError, RuntimeError) as e:
+            logger.error(f"Brand voice retrieval failed: {str(e)}", exc_info=True)
+            state["error"] = f"Brand voice retrieval failed: {str(e)}"
+        except Exception as e:
+            logger.critical(f"Unexpected error in brand voice retrieval: {str(e)}", exc_info=True)
+            raise
 
-    def _fix_heading_hierarchy(self, sections: List[Dict]) -> List[Dict]:
-        """Ensure proper H1→H2→H3 progression.
+        return state
 
-        Args:
-            sections: List of section outlines
-
-        Returns:
-            Fixed sections with proper hierarchy
+    def _generate_outline_node(self, state: ContentState) -> ContentState:
         """
-        if not sections:
-            return sections
+        Node 2: Generate article outline with sections.
 
-        fixed_sections = []
-        prev_level = 1  # H1 is the title
-
-        for section in sections:
-            current_level = section.get('level', 2)
-
-            # Can't skip levels (e.g., H1 → H3)
-            if current_level > prev_level + 1:
-                section['level'] = prev_level + 1
-                print(f"  ⚠️  Fixed heading level: '{section['heading']}' → H{section['level']}")
-
-            fixed_sections.append(section)
-            prev_level = section['level']
-
-        return fixed_sections
-
-    # ========================================================================
-    # STEP 3: Section Writing
-    # ========================================================================
-
-    def write_section(
-        self,
-        section_outline: Dict,
-        brief: ContentBrief,
-        previous_sections: List[str] = None
-    ) -> ArticleSection:
-        """Write a single section of the article.
-
-        This is where the actual content gets created. We write one section
-        at a time to maintain quality and coherence.
-
-        Args:
-            section_outline: Outline for this specific section
-            brief: Overall content brief
-            previous_sections: Previously written sections for context
-
-        Returns:
-            ArticleSection with written content
+        Creates a structured outline with section titles and word count allocations.
         """
-        print(f"  ✍️  Writing: {section_outline['heading']}")
-
-        # Build context from previous sections
-        context = ""
-        if previous_sections:
-            context = "\n\n".join(previous_sections[-2:])  # Last 2 sections for context
-
-        # Build section writing prompt
-        target_words = section_outline['target_word_count']
-        keyword = brief['primary_keyword']
-        target_keyword_count = max(2, target_words // 200)  # 1 keyword per ~200 words
-
-        section_prompt = f"""Write the following section for a blog post.
-
-SECTION HEADING: {section_outline['heading']}
-HEADING LEVEL: H{section_outline['level']}
-
-STRICT WORD COUNT: Write EXACTLY {target_words} words (±20 words maximum).
-Stop writing immediately when you reach {target_words} words.
-
-PRIMARY KEYWORD: "{keyword}"
-KEYWORD REQUIREMENT: Include "{keyword}" {target_keyword_count}-{target_keyword_count + 1} times naturally in this section.
-- Use keyword in first or second sentence
-- Include natural variations of the keyword
-- Make it sound natural, never forced
-
-SECONDARY KEYWORDS: {', '.join(brief['secondary_keywords'])}
-
-KEY POINTS TO COVER:
-{chr(10).join(f"- {point}" for point in section_outline.get('key_points', []))}
-
-PREVIOUS CONTEXT (for continuity):
-{context if context else "This is the first section."}
-
-REQUIREMENTS:
-- Write in brand voice: direct, conversational, simple and accessible
-- Use 8th-9th grade reading level (simple words, short sentences)
-- Keep sentences under 20 words each
-- Use short paragraphs (2-3 sentences maximum)
-- Include specific, relatable examples
-- Explain any technical terms immediately in plain English
-- Write EXACTLY {target_words} words - count carefully and stop at the limit
-
-Write the section content now. Only the body text, no heading.
-"""
-
         try:
-            # Generate section content
-            content = self._generate_with_llm(
-                prompt=section_prompt,
-                system_prompt=self.system_prompt,
+            logger.info("Generating article outline")
+
+            # Calculate word count distribution using constants
+            intro_words = int(state["target_word_count"] * INTRO_WORD_RATIO)
+            conclusion_words = int(state["target_word_count"] * CONCLUSION_WORD_RATIO)
+            body_words = state["target_word_count"] - intro_words - conclusion_words
+
+            # Determine number of sections
+            num_sections = max(MIN_SECTIONS, min(MAX_SECTIONS, body_words // WORDS_PER_SECTION))
+            words_per_section = body_words // num_sections
+
+            system_prompt = """You are an expert content strategist. Create a clear, logical outline for a blog article.
+
+Requirements:
+- Direct, conversational, simple style
+- Each section should cover one main point
+- Section titles should be descriptive and engaging
+- Logical flow from one section to the next
+
+Respond with ONLY section titles, one per line, no numbering or formatting."""
+
+            user_prompt = f"""Create an outline with exactly {num_sections} main sections for this article:
+
+Topic: {state['topic']}
+Keyword: {state['target_keyword']}
+Audience: {state['target_audience']}
+
+List {num_sections} section titles (one per line):"""
+
+            response = self.llm.generate(
+                prompt=user_prompt,
+                system_prompt=system_prompt,
+                max_tokens=300,
                 temperature=0.7
             )
 
-            # Clean up content
-            content = content.strip()
-            word_count = len(content.split())
+            # Parse section titles
+            section_titles = [
+                line.strip().lstrip('123456789.-) ')
+                for line in response.strip().split('\n')
+                if line.strip() and len(line.strip()) > 5
+            ]
 
-            # Validate keyword usage
-            keyword_count = content.lower().count(brief['primary_keyword'].lower())
-            if keyword_count < target_keyword_count:
-                print(f"    ⚠️  Low keyword density: {keyword_count}/{target_keyword_count} occurrences")
+            # Ensure we have the right number of sections
+            section_titles = section_titles[:num_sections]
+            if len(section_titles) < num_sections:
+                # Fill with generic titles if needed
+                for i in range(len(section_titles), num_sections):
+                    section_titles.append(f"Additional Insights on {state['target_keyword']}")
 
-            section = ArticleSection(
-                heading=section_outline['heading'],
-                level=section_outline['level'],
-                content=content,
-                word_count=word_count
-            )
+            state["outline"] = {
+                "introduction": {
+                    "word_count": intro_words
+                },
+                "sections": [
+                    {
+                        "title": title,
+                        "word_count": words_per_section
+                    }
+                    for title in section_titles
+                ],
+                "conclusion": {
+                    "word_count": conclusion_words
+                }
+            }
 
-            print(f"    ✓ Wrote {word_count} words (target: {target_words})")
-            return section
+            state["total_sections"] = len(section_titles)
+            logger.info(f"Generated outline with {state['total_sections']} sections")
 
+        except (KeyError, ValueError, RuntimeError) as e:
+            logger.error(f"Outline generation failed: {str(e)}", exc_info=True)
+            state["error"] = f"Outline generation failed: {str(e)}"
         except Exception as e:
-            print(f"    ✗ Error writing section: {str(e)}")
+            logger.critical(f"Unexpected error in outline generation: {str(e)}", exc_info=True)
             raise
 
-    # ========================================================================
-    # STEP 4: Introduction & Conclusion
-    # ========================================================================
+        return state
 
-    def write_introduction(self, brief: ContentBrief, outline: List[Dict]) -> str:
-        """Write engaging introduction.
+    def _write_introduction_node(self, state: ContentState) -> ContentState:
+        """
+        Node 3: Write the article introduction.
 
-        The intro needs to:
-        - Hook the reader immediately
-        - Set expectations for what they'll learn
-        - Include primary keyword naturally
-        - Match brand voice
+        Creates an engaging introduction with hook, context, and preview.
+        """
+        try:
+            logger.info("Writing introduction")
 
-        Args:
-            brief: Content brief
-            outline: Article outline for context
+            target_words = state["outline"]["introduction"]["word_count"]
+
+            system_prompt = """Write simple, direct introductions.
+Use short sentences (6-10 words average).
+Simple words only. Break complex ideas into separate sentences.
+
+Write complete content. No meta-commentary."""
+
+            brand_examples = state.get('brand_voice_context', DEFAULT_BRAND_VOICE)
+
+            user_prompt = f"""Write EXACTLY {target_words} words introducing: {state['target_keyword']}
+
+Start with "{state['target_keyword']}" in first sentence. Use it 2 times total.
+Short sentences. Simple words. Reach {target_words} words.
+No explanations.
+
+Brand voice:
+{brand_examples}
+
+BEGIN WRITING NOW:"""
+
+            introduction = self.llm.generate(
+                prompt=user_prompt,
+                system_prompt=system_prompt,
+                max_tokens=2000,
+                temperature=0.45
+            )
+
+            # Clean up meta-text artifacts aggressively
+            introduction = self._clean_meta_text(introduction)
+
+            # Additional cleanup: remove first paragraph if it contains meta-text
+            paragraphs = introduction.split('\n\n')
+            if paragraphs and len(paragraphs) > 1:
+                first_para = paragraphs[0].lower()
+                if any(phrase in first_para for phrase in ['here\'s', 'okay', 'let me', 'aiming for', 'for the']):
+                    introduction = '\n\n'.join(paragraphs[1:])
+
+            state["introduction"] = introduction.strip()
+            logger.info(f"Introduction written: {len(state['introduction'].split())} words")
+
+        except (KeyError, ValueError, RuntimeError) as e:
+            logger.error(f"Introduction writing failed: {str(e)}", exc_info=True)
+            state["error"] = f"Introduction writing failed: {str(e)}"
+        except Exception as e:
+            logger.critical(f"Unexpected error in introduction: {str(e)}", exc_info=True)
+            raise
+
+        return state
+
+    def _write_section_node(self, state: ContentState) -> ContentState:
+        """
+        Node 4: Write a single body section.
+
+        This node is called multiple times in a loop to write all body sections.
+        """
+        try:
+            section_index = state["current_section_index"]
+            section_info = state["outline"]["sections"][section_index]
+
+            logger.info(f"Writing section {section_index + 1}/{state['total_sections']}: {section_info['title']}")
+
+            target_words = section_info["word_count"]
+
+            system_prompt = """Write clear, simple content.
+Short sentences (6-10 words).
+Simple words. One idea per sentence.
+
+No meta-commentary. Just content."""
+
+            keyword = state['target_keyword']
+            # Calculate keyword density using constant
+            target_keyword_count = max(1, target_words // KEYWORD_FREQUENCY)
+
+            brand_examples = state.get('brand_voice_context', DEFAULT_BRAND_VOICE)
+
+            user_prompt = f"""Write EXACTLY {target_words} words about: {section_info['title']}
+
+Include "{keyword}" {target_keyword_count} times naturally.
+Short sentences. Simple words. Reach {target_words} words.
+No explanations.
+
+Brand voice:
+{brand_examples[:300]}
+
+BEGIN WRITING NOW:"""
+
+            section_content = self.llm.generate(
+                prompt=user_prompt,
+                system_prompt=system_prompt,
+                max_tokens=2500,
+                temperature=0.45
+            )
+
+            # Clean up meta-text artifacts
+            section_content = self._clean_meta_text(section_content)
+
+            # Ensure proper heading format
+            section_content = section_content.strip()
+            if not section_content.startswith("## "):
+                section_content = f"## {section_info['title']}\n\n{section_content}"
+
+            # Validate word count
+            actual_words = len(section_content.split())
+            if actual_words < target_words * 0.5:
+                logger.warning(f"Section {section_index + 1} too short: {actual_words}/{target_words} words")
+
+            # Append to sections list
+            state["sections"].append({
+                "title": section_info["title"],
+                "content": section_content
+            })
+
+            # Increment section counter
+            state["current_section_index"] += 1
+
+            logger.info(f"Section {section_index + 1} written: {actual_words} words (target: {target_words})")
+
+        except (KeyError, ValueError, RuntimeError) as e:
+            logger.error(f"Section writing failed: {str(e)}", exc_info=True)
+            state["error"] = f"Section writing failed: {str(e)}"
+        except Exception as e:
+            logger.critical(f"Unexpected error in section writing: {str(e)}", exc_info=True)
+            raise
+
+        return state
+
+    def _should_continue_sections(self, state: ContentState) -> str:
+        """
+        Conditional edge function: Determine if more sections need to be written.
 
         Returns:
-            Introduction text
+            "continue" if more sections to write, "done" if all sections complete
         """
-        print("  ✍️  Writing introduction...")
+        if state["current_section_index"] < state["total_sections"]:
+            return "continue"
+        else:
+            return "done"
 
-        brand_examples = self.get_brand_voice_examples(
-            topic=brief['primary_keyword'],
-            content_type="blog_post_intro",
-            n_examples=2
-        )
-
-        intro_prompt = f"""Write an engaging introduction for this blog post.
-
-TOPIC: {brief['primary_keyword']}
-META TITLE: {brief['meta_title']}
-SEARCH INTENT: {brief['search_intent']}
-
-THE ARTICLE WILL COVER:
-{chr(10).join(f"- {section['heading']}" for section in outline)}
-
-BRAND VOICE EXAMPLES (match this style):
-{brand_examples if brand_examples else "Direct, educational, accessible. Example: 'Skin is a complex organ. Your skincare doesn't have to be.'"}
-
-REQUIREMENTS:
-- Start with a strong, direct opening sentence (under 15 words)
-- Use simple, conversational language (8th grade reading level)
-- Include primary keyword "{brief['primary_keyword']}" 2-3 times naturally
-- Keep sentences under 20 words
-- 3-4 short paragraphs (2-3 sentences each)
-- Write EXACTLY 150-200 words
-- End with a smooth transition to main content
-
-Write the introduction now.
-"""
-
-        intro = self._generate_with_llm(
-            prompt=intro_prompt,
-            system_prompt=self.system_prompt,
-            temperature=0.7
-        )
-
-        print(f"    ✓ Wrote introduction ({len(intro.split())} words)")
-        return intro.strip()
-
-    def write_conclusion(
-        self,
-        brief: ContentBrief,
-        sections: List[ArticleSection]
-    ) -> str:
-        """Write conclusion that summarizes key points.
-
-        Args:
-            brief: Content brief
-            sections: All written sections for context
-
-        Returns:
-            Conclusion text
+    def _write_conclusion_node(self, state: ContentState) -> ContentState:
         """
-        print("  ✍️  Writing conclusion...")
+        Node 5: Write the article conclusion.
 
-        # Summarize key points from sections
-        key_points = "\n".join([
-            f"- {section.heading}: {section.content[:100]}..."
-            for section in sections[:5]  # First 5 sections
-        ])
+        Creates a conclusion that summarizes key points and provides final thoughts.
+        """
+        try:
+            logger.info("Writing conclusion")
 
-        conclusion_prompt = f"""Write a conclusion for this blog post.
+            target_words = state["outline"]["conclusion"]["word_count"]
 
-TOPIC: {brief['primary_keyword']}
+            # Get section titles for summary context
+            [s["title"] for s in state["outline"]["sections"]]
 
-KEY POINTS COVERED:
+            brand_examples = state.get('brand_voice_context', DEFAULT_BRAND_VOICE)
+
+            system_prompt = """Write clear, simple conclusions.
+Short sentences (8-12 words).
+Summarize key points.
+
+No meta-commentary."""
+
+            # Get section summaries for context
+            key_points = "\n".join([
+                f"- {s['title']}"
+                for s in state["sections"][:3]  # First 3 sections
+            ])
+
+            brand_examples = state.get('brand_voice_context', DEFAULT_BRAND_VOICE)
+
+            user_prompt = f"""Write EXACTLY {target_words} words concluding this article about {state['target_keyword']}.
+
+Key points:
 {key_points}
 
-REQUIREMENTS:
-- Summarize the main takeaway in simple terms
-- Include primary keyword "{brief['primary_keyword']}" once naturally
-- Use simple language (8th grade level)
-- Keep sentences under 20 words
-- Be actionable (what should reader do next?)
-- 2-3 short paragraphs (2-3 sentences each)
-- Write EXACTLY 100-150 words
-- Don't introduce new information
-- Match brand voice: direct, helpful, conversational
+Mention "{state['target_keyword']}" once.
+Write {target_words} words total.
+No explanations.
 
-Write the conclusion now.
-"""
+Brand voice:
+{brand_examples[:200]}
 
-        conclusion = self._generate_with_llm(
-            prompt=conclusion_prompt,
-            system_prompt=self.system_prompt,
-            temperature=0.7
-        )
+BEGIN WRITING NOW:"""
 
-        print(f"    ✓ Wrote conclusion ({len(conclusion.split())} words)")
-        return conclusion.strip()
-
-    # ========================================================================
-    # STEP 5: Call-to-Action (CTA)
-    # ========================================================================
-
-    def generate_cta(self, brief: ContentBrief) -> str:
-        """Generate relevant call-to-action.
-
-        CTAs should:
-        - Be relevant to the content
-        - Not be pushy or salesy
-        - Provide clear next step
-        - Match brand voice
-
-        Args:
-            brief: Content brief
-
-        Returns:
-            CTA text
-        """
-        cta_prompt = f"""Generate a subtle, helpful call-to-action for this blog post.
-
-TOPIC: {brief['primary_keyword']}
-BRAND: Clean, science-backed skincare
-
-REQUIREMENTS:
-- Helpful, not pushy
-- Relevant to the content
-- 1-2 sentences max
-- Examples:
-  * "Ready to simplify your routine? Browse our essentials."
-  * "Want personalized recommendations? Take our skin quiz."
-  * "Questions? Our team is here to help."
-
-Write the CTA now.
-"""
-
-        cta = self._generate_with_llm(
-            prompt=cta_prompt,
-            system_prompt=self.system_prompt,
-            temperature=0.8
-        )
-
-        return cta.strip()
-
-    # ========================================================================
-    # STEP 6: Content Assembly
-    # ========================================================================
-
-    def assemble_article(
-        self,
-        brief: ContentBrief,
-        introduction: str,
-        sections: List[ArticleSection],
-        conclusion: str,
-        cta: str
-    ) -> Article:
-        """Assemble all components into final article.
-
-        This combines everything into the final Article object with both
-        Markdown and HTML versions.
-
-        Args:
-            brief: Content brief
-            introduction: Written introduction
-            sections: All written sections
-            conclusion: Written conclusion
-            cta: Call-to-action
-
-        Returns:
-            Complete Article object
-        """
-        print("\n📦 Assembling final article...")
-
-        # Calculate total word count
-        total_words = (
-            len(introduction.split()) +
-            sum(section.word_count for section in sections) +
-            len(conclusion.split())
-        )
-
-        # Build Markdown version
-        markdown_parts = [
-            f"# {brief['meta_title']}\n",
-            introduction,
-            ""
-        ]
-
-        for section in sections:
-            heading_marker = "#" * (section.level + 1)  # +1 because title is H1
-            markdown_parts.append(f"{heading_marker} {section.heading}\n")
-            markdown_parts.append(section.content)
-            markdown_parts.append("")
-
-        markdown_parts.append(conclusion)
-        markdown_parts.append("")
-        markdown_parts.append(f"---\n\n{cta}")
-
-        markdown_content = "\n".join(markdown_parts)
-
-        # Create article object
-        article = Article(
-            title=brief['meta_title'],
-            meta_description=brief['meta_description'],
-            introduction=introduction,
-            sections=sections,
-            conclusion=conclusion,
-            call_to_action=cta,
-            total_word_count=total_words,
-            markdown_content=markdown_content,
-            html_content=None  # We'll add HTML conversion later if needed
-        )
-
-        print(f"✓ Article assembled: {total_words} words total")
-        return article
-
-    # ========================================================================
-    # STEP 7: SEO Optimization
-    # ========================================================================
-
-    def optimize_for_seo(
-        self,
-        article: Article,
-        brief: ContentBrief
-    ) -> Article:
-        """Ensure content is SEO-optimized.
-
-        Checks:
-        - Keyword density (1-2%)
-        - Keyword in title, intro, conclusion
-        - Proper heading hierarchy
-        - Internal linking opportunities
-
-        Args:
-            article: Generated article
-            brief: Content brief with keywords
-
-        Returns:
-            Optimized article
-        """
-        print("\n🔍 Optimizing for SEO...")
-
-        full_text = f"{article.introduction} {' '.join(s.content for s in article.sections)} {article.conclusion}"
-        full_text_lower = full_text.lower()
-
-        # Check keyword density
-        primary_keyword = brief['primary_keyword'].lower()
-        keyword_count = full_text_lower.count(primary_keyword)
-        keyword_density = (keyword_count / article.total_word_count) * 100
-
-        print(f"  • Primary keyword '{primary_keyword}': {keyword_count} times ({keyword_density:.2f}%)")
-
-        # Check keyword in key places
-        has_in_title = primary_keyword in article.title.lower()
-        has_in_intro = primary_keyword in article.introduction.lower()
-        has_in_conclusion = primary_keyword in article.conclusion.lower()
-
-        print(f"  • Keyword in title: {'✓' if has_in_title else '✗'}")
-        print(f"  • Keyword in intro: {'✓' if has_in_intro else '✗'}")
-        print(f"  • Keyword in conclusion: {'✓' if has_in_conclusion else '✗'}")
-
-        # Check heading hierarchy
-        heading_levels = [section.level for section in article.sections]
-        proper_hierarchy = all(
-            heading_levels[i] <= heading_levels[i+1] + 1
-            for i in range(len(heading_levels) - 1)
-        )
-        print(f"  • Heading hierarchy: {'✓' if proper_hierarchy else '⚠️  check manually'}")
-
-        # If SEO needs improvement, we'd rewrite sections here
-        # For now, we'll just report
-
-        print("✓ SEO optimization check complete")
-        return article
-
-    # ========================================================================
-    # STEP 8: Full Workflow Orchestration
-    # ========================================================================
-
-    def generate_article(self, brief: ContentBrief) -> Article:
-        """Generate a complete article from a content brief.
-
-        This orchestrates the entire content generation workflow:
-        1. Generate outline
-        2. Write introduction
-        3. Write all sections
-        4. Write conclusion
-        5. Generate CTA
-        6. Assemble article
-        7. Optimize for SEO
-
-        Args:
-            brief: Content brief with topic, keywords, etc.
-
-        Returns:
-            Complete, SEO-optimized article
-        """
-        print(f"\n{'='*60}")
-        print(f"🚀 Starting content generation for: {brief['primary_keyword']}")
-        print(f"{'='*60}")
-
-        # Step 1: Generate outline
-        outline = self.generate_outline(brief)
-
-        # Step 2: Write introduction
-        introduction = self.write_introduction(brief, outline)
-
-        # Step 3: Write all sections
-        print("\n📝 Writing article sections...")
-        sections = []
-        previous_content = []
-
-        for section_outline in outline:
-            section = self.write_section(
-                section_outline=section_outline,
-                brief=brief,
-                previous_sections=previous_content
+            conclusion = self.llm.generate(
+                prompt=user_prompt,
+                system_prompt=system_prompt,
+                max_tokens=1500,
+                temperature=0.45
             )
-            sections.append(section)
-            previous_content.append(section.content)
 
-        # Step 4: Write conclusion
-        conclusion = self.write_conclusion(brief, sections)
+            # Clean up meta-text artifacts
+            conclusion = self._clean_meta_text(conclusion)
+            state["conclusion"] = conclusion.strip()
+            logger.info(f"Conclusion written: {len(state['conclusion'].split())} words")
 
-        # Step 5: Generate CTA
-        cta = self.generate_cta(brief)
+        except (KeyError, ValueError, RuntimeError) as e:
+            logger.error(f"Conclusion writing failed: {str(e)}", exc_info=True)
+            state["error"] = f"Conclusion writing failed: {str(e)}"
+        except Exception as e:
+            logger.critical(f"Unexpected error in conclusion: {str(e)}", exc_info=True)
+            raise
 
-        # Step 6: Assemble article
-        article = self.assemble_article(
-            brief=brief,
-            introduction=introduction,
-            sections=sections,
-            conclusion=conclusion,
-            cta=cta
-        )
+        return state
 
-        # Step 7: Optimize for SEO
-        article = self.optimize_for_seo(article, brief)
+    def _generate_cta_node(self, state: ContentState) -> ContentState:
+        """
+        Node 6: Generate call-to-action.
 
-        print(f"\n{'='*60}")
-        print("✅ Article generation complete!")
-        print(f"   • Total words: {article.total_word_count}")
-        print(f"   • Sections: {len(article.sections)}")
-        print(f"{'='*60}\n")
+        Creates a brief, compelling CTA encouraging reader engagement.
+        """
+        try:
+            logger.info("Generating call-to-action")
 
-        return article
+            system_prompt = """Write 2 short call-to-action sentences.
+Friendly tone. Under 12 words each."""
+
+            user_prompt = f"""Write 2 sentences inviting readers to explore {state['target_keyword']}.
+
+Just the 2 sentences. No explanations.
+
+BEGIN:"""
+
+            cta = self.llm.generate(
+                prompt=user_prompt,
+                system_prompt=system_prompt,
+                max_tokens=300,
+                temperature=0.6
+            )
+
+            state["cta"] = cta.strip()
+            logger.info("Call-to-action generated")
+
+        except (KeyError, ValueError, RuntimeError) as e:
+            logger.error(f"CTA generation failed: {str(e)}", exc_info=True)
+            state["error"] = f"CTA generation failed: {str(e)}"
+        except Exception as e:
+            logger.critical(f"Unexpected error in CTA generation: {str(e)}", exc_info=True)
+            raise
+
+        return state
+
+    def _assemble_article_node(self, state: ContentState) -> ContentState:
+        """
+        Node 7: Assemble all components into final article.
+
+        Combines introduction, sections, conclusion, and CTA into complete article.
+        """
+        try:
+            logger.info("Assembling article")
+
+            # Build article parts
+            parts = []
+
+            # Title (H1)
+            title = state["topic"]
+            if not title.startswith("# "):
+                title = f"# {title}"
+            parts.append(title)
+            parts.append("")  # Blank line
+
+            # Add meta description if available
+            if "meta_description" in state and state["meta_description"]:
+                parts.append(f"*{state['meta_description']}*")
+                parts.append("")  # Blank line
+
+            # Introduction
+            parts.append(state["introduction"])
+            parts.append("")
+
+            # Body sections
+            for section in state["sections"]:
+                parts.append(section["content"])
+                parts.append("")
+
+            # Conclusion
+            parts.append("## Conclusion")
+            parts.append("")
+            parts.append(state["conclusion"])
+            parts.append("")
+
+            # Call-to-action
+            parts.append("---")
+            parts.append("")
+            parts.append(state["cta"])
+
+            # Join all parts
+            state["article"] = "\n".join(parts)
+
+            word_count = len(state["article"].split())
+            logger.info(f"Article assembled: {word_count} words")
+
+        except (KeyError, ValueError, RuntimeError) as e:
+            logger.error(f"Article assembly failed: {str(e)}", exc_info=True)
+            state["error"] = f"Article assembly failed: {str(e)}"
+        except Exception as e:
+            logger.critical(f"Unexpected error in article assembly: {str(e)}", exc_info=True)
+            raise
+
+        return state
+
+    def _optimize_seo_node(self, state: ContentState) -> ContentState:
+        """
+        Node 8: Optimize article for SEO.
+
+        Generates meta description and keywords, validates heading structure.
+        """
+        try:
+            logger.info("Optimizing for SEO")
+
+            # Generate meta description
+            meta_prompt = f"""Write a meta description for this article.
+
+Requirements:
+- Start with: "{state['target_keyword']}"
+- Length: 140-155 characters total
+- Enticing and clear
+
+Just write the description. No explanations.
+
+Meta description:"""
+
+            meta_description = self.llm.generate(
+                prompt=meta_prompt,
+                system_prompt="You are an SEO expert writing meta descriptions.",
+                max_tokens=100,
+                temperature=0.6
+            )
+
+            meta_description = meta_description.strip().strip('"')
+
+            # Ensure keyword is at the start for better SEO
+            if not meta_description.lower().startswith(state["target_keyword"].lower()):
+                meta_description = f"{state['target_keyword']}: {meta_description}"
+
+            # Validate length (120-160 chars) - target middle of range
+            if len(meta_description) < 120:
+                meta_description = meta_description + f" Learn everything about {state['target_keyword']}."
+            if len(meta_description) > 160:
+                meta_description = meta_description[:157] + "..."
+
+            state["meta_description"] = meta_description
+
+            # Generate meta keywords (5-10 related keywords)
+            keywords_prompt = f"""Generate 5-10 SEO keywords for this article:
+
+Topic: {state['topic']}
+Primary Keyword: {state['target_keyword']}
+
+List keywords (comma-separated):"""
+
+            keywords_response = self.llm.generate(
+                prompt=keywords_prompt,
+                system_prompt="You are an SEO expert generating keywords.",
+                max_tokens=100,
+                temperature=0.7
+            )
+
+            # Parse keywords
+            keywords = [
+                kw.strip().strip('"\'')
+                for kw in keywords_response.split(',')
+                if kw.strip()
+            ]
+
+            # Ensure primary keyword is first
+            if state["target_keyword"] not in keywords:
+                keywords.insert(0, state["target_keyword"])
+
+            state["meta_keywords"] = keywords[:10]
+
+            # Validate heading hierarchy (H1 -> H2 -> H3, no skipping)
+            lines = state["article"].split('\n')
+            fixed_lines = []
+            last_heading_level = 1  # Start with H1
+
+            for line in lines:
+                if line.startswith('#'):
+                    # Count heading level
+                    level = len(line) - len(line.lstrip('#'))
+
+                    # Fix skipped levels (e.g., H1 -> H3 becomes H1 -> H2)
+                    if level > last_heading_level + 1:
+                        level = last_heading_level + 1
+                        line = '#' * level + line.lstrip('#')
+
+                    last_heading_level = level
+
+                fixed_lines.append(line)
+
+            state["article"] = '\n'.join(fixed_lines)
+
+            logger.info("SEO optimization complete")
+            logger.info(f"Meta description: {len(state['meta_description'])} chars")
+            logger.info(f"Meta keywords: {len(state['meta_keywords'])} keywords")
+
+        except (KeyError, ValueError, RuntimeError) as e:
+            logger.error(f"SEO optimization failed: {str(e)}", exc_info=True)
+            state["error"] = f"SEO optimization failed: {str(e)}"
+        except Exception as e:
+            logger.critical(f"Unexpected error in SEO optimization: {str(e)}", exc_info=True)
+            raise
+
+        return state
+
+
+# Convenience function for backwards compatibility
+def create_content_writer_agent() -> ContentWriterAgent:
+    """Factory function to create a ContentWriterAgent instance."""
+    return ContentWriterAgent()
