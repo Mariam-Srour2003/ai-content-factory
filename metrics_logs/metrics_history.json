@@ -1,0 +1,858 @@
+[
+  {
+    "content_quality_score": 87.2813043478261,
+    "brand_voice_similarity": 0.85,
+    "keyword_density": 0.2347417840375587,
+    "readability_score": 41.85015114285977,
+    "word_count_accuracy": 29.600000000000005,
+    "generation_time": 45.816162109375,
+    "heading_structure_score": 0.8,
+    "seo_requirements_score": 0.6666666666666666,
+    "details": {
+      "actual_word_count": 1704,
+      "target_word_count": 1000,
+      "keyword_occurrences": 4,
+      "heading_hierarchy_issues": [
+        "Skipped heading level: H1 \u2192 H3"
+      ],
+      "seo_checklist": {
+        "keyword_in_title": true,
+        "keyword_in_meta": false,
+        "keyword_in_intro": true,
+        "keyword_in_conclusion": true,
+        "has_meta_description": true,
+        "meta_description_length_ok": false
+      }
+    },
+    "timestamp": "2025-11-22T00:50:48.725864",
+    "passes_requirements": false,
+    "metadata": {
+      "topic": "retinol for beginners",
+      "target_word_count": 1000,
+      "search_intent": "informational"
+    }
+  },
+  {
+    "content_quality_score": 88.33259259259259,
+    "brand_voice_similarity": 0.85,
+    "keyword_density": 0.07722007722007722,
+    "readability_score": 31.421011213456154,
+    "word_count_accuracy": 38.125,
+    "generation_time": 30.228822231292725,
+    "heading_structure_score": 0.8,
+    "seo_requirements_score": 0.3333333333333333,
+    "details": {
+      "actual_word_count": 1295,
+      "target_word_count": 800,
+      "keyword_occurrences": 1,
+      "heading_hierarchy_issues": [
+        "Skipped heading level: H1 \u2192 H3"
+      ],
+      "seo_checklist": {
+        "keyword_in_title": true,
+        "keyword_in_meta": false,
+        "keyword_in_intro": false,
+        "keyword_in_conclusion": false,
+        "has_meta_description": true,
+        "meta_description_length_ok": false
+      }
+    },
+    "timestamp": "2025-11-22T00:51:19.197908",
+    "passes_requirements": false,
+    "metadata": {
+      "topic": "niacinamide benefits"
+    }
+  },
+  {
+    "content_quality_score": 87.90603773584905,
+    "brand_voice_similarity": 0.85,
+    "keyword_density": 1.5591165006496317,
+    "readability_score": 26.56943100065405,
+    "word_count_accuracy": 0,
+    "generation_time": 43.33575963973999,
+    "heading_structure_score": 0.8,
+    "seo_requirements_score": 0.6666666666666666,
+    "details": {
+      "actual_word_count": 2309,
+      "target_word_count": 900,
+      "keyword_occurrences": 36,
+      "heading_hierarchy_issues": [
+        "Skipped heading level: H1 \u2192 H3"
+      ],
+      "seo_checklist": {
+        "keyword_in_title": true,
+        "keyword_in_meta": false,
+        "keyword_in_intro": true,
+        "keyword_in_conclusion": true,
+        "has_meta_description": true,
+        "meta_description_length_ok": false
+      }
+    },
+    "timestamp": "2025-11-22T00:52:02.660023",
+    "passes_requirements": false,
+    "metadata": {
+      "topic": "hyaluronic acid serum"
+    }
+  },
+  {
+    "content_quality_score": 83.91246542795962,
+    "brand_voice_similarity": 0.85,
+    "keyword_density": 0.4919184820801124,
+    "readability_score": 71.4157147018506,
+    "word_count_accuracy": 57.699999999999996,
+    "generation_time": 32.221704959869385,
+    "heading_structure_score": 0.8,
+    "seo_requirements_score": 0.6666666666666666,
+    "details": {
+      "actual_word_count": 1423,
+      "target_word_count": 1000,
+      "keyword_occurrences": 7,
+      "heading_hierarchy_issues": [
+        "Skipped heading level: H1 \u2192 H3"
+      ],
+      "seo_checklist": {
+        "keyword_in_title": true,
+        "keyword_in_meta": true,
+        "keyword_in_intro": true,
+        "keyword_in_conclusion": false,
+        "has_meta_description": true,
+        "meta_description_length_ok": false
+      }
+    },
+    "timestamp": "2025-11-22T01:17:41.791564",
+    "passes_requirements": false,
+    "metadata": {
+      "topic": "retinol for beginners",
+      "target_word_count": 1000,
+      "search_intent": "informational"
+    }
+  },
+  {
+    "content_quality_score": 84.6095150012288,
+    "brand_voice_similarity": 0.85,
+    "keyword_density": 0.5862646566164154,
+    "readability_score": 57.78192586267815,
+    "word_count_accuracy": 50.75000000000001,
+    "generation_time": 23.861233472824097,
+    "heading_structure_score": 0.8,
+    "seo_requirements_score": 0.8333333333333334,
+    "details": {
+      "actual_word_count": 1194,
+      "target_word_count": 800,
+      "keyword_occurrences": 7,
+      "heading_hierarchy_issues": [
+        "Skipped heading level: H1 \u2192 H3"
+      ],
+      "seo_checklist": {
+        "keyword_in_title": true,
+        "keyword_in_meta": true,
+        "keyword_in_intro": true,
+        "keyword_in_conclusion": true,
+        "has_meta_description": true,
+        "meta_description_length_ok": false
+      }
+    },
+    "timestamp": "2025-11-22T01:18:05.831902",
+    "passes_requirements": false,
+    "metadata": {
+      "topic": "niacinamide benefits"
+    }
+  },
+  {
+    "content_quality_score": 86.24185185185186,
+    "brand_voice_similarity": 0.85,
+    "keyword_density": 2.1621621621621623,
+    "readability_score": 62.86001819470701,
+    "word_count_accuracy": 35.55555555555555,
+    "generation_time": 27.45033311843872,
+    "heading_structure_score": 0.8,
+    "seo_requirements_score": 1.0,
+    "details": {
+      "actual_word_count": 1480,
+      "target_word_count": 900,
+      "keyword_occurrences": 32,
+      "heading_hierarchy_issues": [
+        "Skipped heading level: H1 \u2192 H3"
+      ],
+      "seo_checklist": {
+        "keyword_in_title": true,
+        "keyword_in_meta": true,
+        "keyword_in_intro": true,
+        "keyword_in_conclusion": true,
+        "has_meta_description": true,
+        "meta_description_length_ok": true
+      }
+    },
+    "timestamp": "2025-11-22T01:18:33.376789",
+    "passes_requirements": false,
+    "metadata": {
+      "topic": "hyaluronic acid serum"
+    }
+  },
+  {
+    "content_quality_score": 85.47571901525853,
+    "brand_voice_similarity": 0.85,
+    "keyword_density": 0.628930817610063,
+    "readability_score": 69.16863969465649,
+    "word_count_accuracy": 72.8,
+    "generation_time": 19.847407579421997,
+    "heading_structure_score": 0.8,
+    "seo_requirements_score": 0.8333333333333334,
+    "details": {
+      "actual_word_count": 1272,
+      "target_word_count": 1000,
+      "keyword_occurrences": 8,
+      "heading_hierarchy_issues": [
+        "Skipped heading level: H1 \u2192 H3"
+      ],
+      "seo_checklist": {
+        "keyword_in_title": true,
+        "keyword_in_meta": true,
+        "keyword_in_intro": true,
+        "keyword_in_conclusion": true,
+        "has_meta_description": true,
+        "meta_description_length_ok": false
+      }
+    },
+    "timestamp": "2025-11-22T01:19:56.209845",
+    "passes_requirements": false,
+    "metadata": {
+      "topic": "retinol for beginners",
+      "target_word_count": 1000,
+      "search_intent": "informational"
+    }
+  },
+  {
+    "content_quality_score": 77.76833947489118,
+    "brand_voice_similarity": 0.85,
+    "keyword_density": 0.56657223796034,
+    "readability_score": 62.86225598935226,
+    "word_count_accuracy": 67.625,
+    "generation_time": 15.98790717124939,
+    "heading_structure_score": 0.8,
+    "seo_requirements_score": 0.8333333333333334,
+    "details": {
+      "actual_word_count": 1059,
+      "target_word_count": 800,
+      "keyword_occurrences": 6,
+      "heading_hierarchy_issues": [
+        "Skipped heading level: H1 \u2192 H3"
+      ],
+      "seo_checklist": {
+        "keyword_in_title": true,
+        "keyword_in_meta": true,
+        "keyword_in_intro": true,
+        "keyword_in_conclusion": true,
+        "has_meta_description": true,
+        "meta_description_length_ok": false
+      }
+    },
+    "timestamp": "2025-11-22T01:20:12.375362",
+    "passes_requirements": false,
+    "metadata": {
+      "topic": "niacinamide benefits"
+    }
+  },
+  {
+    "content_quality_score": 86.3242105263158,
+    "brand_voice_similarity": 0.85,
+    "keyword_density": 1.6799292661361624,
+    "readability_score": 58.07672029702974,
+    "word_count_accuracy": 74.33333333333334,
+    "generation_time": 16.381927967071533,
+    "heading_structure_score": 0.8,
+    "seo_requirements_score": 1.0,
+    "details": {
+      "actual_word_count": 1131,
+      "target_word_count": 900,
+      "keyword_occurrences": 19,
+      "heading_hierarchy_issues": [
+        "Skipped heading level: H1 \u2192 H3"
+      ],
+      "seo_checklist": {
+        "keyword_in_title": true,
+        "keyword_in_meta": true,
+        "keyword_in_intro": true,
+        "keyword_in_conclusion": true,
+        "has_meta_description": true,
+        "meta_description_length_ok": true
+      }
+    },
+    "timestamp": "2025-11-22T01:20:28.864061",
+    "passes_requirements": false,
+    "metadata": {
+      "topic": "hyaluronic acid serum"
+    }
+  },
+  {
+    "content_quality_score": 86.1309090909091,
+    "brand_voice_similarity": 0.85,
+    "keyword_density": 0.16366612111292964,
+    "readability_score": 62.98539852743531,
+    "word_count_accuracy": 47.25,
+    "generation_time": 21.96111226081848,
+    "heading_structure_score": 0.8,
+    "seo_requirements_score": 0.8333333333333334,
+    "details": {
+      "actual_word_count": 1222,
+      "target_word_count": 800,
+      "keyword_occurrences": 2,
+      "heading_hierarchy_issues": [
+        "Skipped heading level: H1 \u2192 H3"
+      ],
+      "seo_checklist": {
+        "keyword_in_title": true,
+        "keyword_in_meta": true,
+        "keyword_in_intro": false,
+        "keyword_in_conclusion": true,
+        "has_meta_description": true,
+        "meta_description_length_ok": true
+      }
+    },
+    "timestamp": "2025-11-22T01:31:14.315145",
+    "passes_requirements": false,
+    "metadata": {
+      "topic": "vitamin C serum benefits",
+      "target_word_count": 800,
+      "demo": true
+    }
+  },
+  {
+    "content_quality_score": 87.25470588235294,
+    "brand_voice_similarity": 0.85,
+    "keyword_density": 1.023391812865497,
+    "readability_score": 46.179209770114966,
+    "word_count_accuracy": 29.000000000000004,
+    "generation_time": 23.127469301223755,
+    "heading_structure_score": 1.0,
+    "seo_requirements_score": 0.8333333333333334,
+    "details": {
+      "actual_word_count": 1368,
+      "target_word_count": 800,
+      "keyword_occurrences": 14,
+      "heading_hierarchy_issues": [],
+      "seo_checklist": {
+        "keyword_in_title": false,
+        "keyword_in_meta": true,
+        "keyword_in_intro": true,
+        "keyword_in_conclusion": true,
+        "has_meta_description": true,
+        "meta_description_length_ok": true
+      }
+    },
+    "timestamp": "2025-11-24T15:55:45.797452",
+    "passes_requirements": false,
+    "metadata": {}
+  },
+  {
+    "content_quality_score": 86.21872340425533,
+    "brand_voice_similarity": 0.85,
+    "keyword_density": 1.4347202295552368,
+    "readability_score": 62.25102467554811,
+    "word_count_accuracy": 25.749999999999996,
+    "generation_time": 26.925285816192627,
+    "heading_structure_score": 1.0,
+    "seo_requirements_score": 0.8333333333333334,
+    "details": {
+      "actual_word_count": 1394,
+      "target_word_count": 800,
+      "keyword_occurrences": 20,
+      "heading_hierarchy_issues": [],
+      "seo_checklist": {
+        "keyword_in_title": false,
+        "keyword_in_meta": true,
+        "keyword_in_intro": true,
+        "keyword_in_conclusion": true,
+        "has_meta_description": true,
+        "meta_description_length_ok": true
+      }
+    },
+    "timestamp": "2025-11-24T16:04:03.831413",
+    "passes_requirements": false,
+    "metadata": {}
+  },
+  {
+    "content_quality_score": 86.11200000000001,
+    "brand_voice_similarity": 0.85,
+    "keyword_density": 0.6306937631394535,
+    "readability_score": 63.122377172280665,
+    "word_count_accuracy": 21.625000000000007,
+    "generation_time": 25.794480085372925,
+    "heading_structure_score": 1.0,
+    "seo_requirements_score": 0.8333333333333334,
+    "details": {
+      "actual_word_count": 1427,
+      "target_word_count": 800,
+      "keyword_occurrences": 9,
+      "heading_hierarchy_issues": [],
+      "seo_checklist": {
+        "keyword_in_title": false,
+        "keyword_in_meta": true,
+        "keyword_in_intro": true,
+        "keyword_in_conclusion": true,
+        "has_meta_description": true,
+        "meta_description_length_ok": true
+      }
+    },
+    "timestamp": "2025-11-24T16:07:50.995413",
+    "passes_requirements": false,
+    "metadata": {}
+  },
+  {
+    "content_quality_score": 81.65686245419833,
+    "brand_voice_similarity": 0.85,
+    "keyword_density": 1.873536299765808,
+    "readability_score": 61.29539095242009,
+    "word_count_accuracy": 93.25,
+    "generation_time": 22.193406105041504,
+    "heading_structure_score": 1.0,
+    "seo_requirements_score": 0.8333333333333334,
+    "details": {
+      "actual_word_count": 854,
+      "target_word_count": 800,
+      "keyword_occurrences": 16,
+      "heading_hierarchy_issues": [],
+      "seo_checklist": {
+        "keyword_in_title": false,
+        "keyword_in_meta": true,
+        "keyword_in_intro": true,
+        "keyword_in_conclusion": true,
+        "has_meta_description": true,
+        "meta_description_length_ok": true
+      }
+    },
+    "timestamp": "2025-11-24T17:29:46.234090",
+    "passes_requirements": false,
+    "metadata": {}
+  },
+  {
+    "content_quality_score": 69.0085749680523,
+    "brand_voice_similarity": 0.85,
+    "keyword_density": 1.3253012048192772,
+    "readability_score": 75.8093787878788,
+    "word_count_accuracy": 96.25,
+    "generation_time": 19.01002526283264,
+    "heading_structure_score": 1.0,
+    "seo_requirements_score": 0.8333333333333334,
+    "details": {
+      "actual_word_count": 830,
+      "target_word_count": 800,
+      "keyword_occurrences": 11,
+      "heading_hierarchy_issues": [],
+      "seo_checklist": {
+        "keyword_in_title": false,
+        "keyword_in_meta": true,
+        "keyword_in_intro": true,
+        "keyword_in_conclusion": true,
+        "has_meta_description": true,
+        "meta_description_length_ok": true
+      }
+    },
+    "timestamp": "2025-11-24T17:31:21.229661",
+    "passes_requirements": false,
+    "metadata": {}
+  },
+  {
+    "content_quality_score": 82.77222492155451,
+    "brand_voice_similarity": 0.85,
+    "keyword_density": 3.3361847733105217,
+    "readability_score": 61.60877225866918,
+    "word_count_accuracy": 53.87500000000001,
+    "generation_time": 25.382065534591675,
+    "heading_structure_score": 1.0,
+    "seo_requirements_score": 0.8333333333333334,
+    "details": {
+      "actual_word_count": 1169,
+      "target_word_count": 800,
+      "keyword_occurrences": 39,
+      "heading_hierarchy_issues": [],
+      "seo_checklist": {
+        "keyword_in_title": false,
+        "keyword_in_meta": true,
+        "keyword_in_intro": true,
+        "keyword_in_conclusion": true,
+        "has_meta_description": true,
+        "meta_description_length_ok": true
+      }
+    },
+    "timestamp": "2025-11-24T23:45:23.989521",
+    "passes_requirements": false,
+    "metadata": {
+      "topic": "Benefits of Vitamin C for Skin",
+      "keyword": "vitamin c serum",
+      "test_type": "brand_voice_embeddings"
+    }
+  },
+  {
+    "content_quality_score": 86.40216216216217,
+    "brand_voice_similarity": 0.85,
+    "keyword_density": 1.0256410256410255,
+    "readability_score": 48.48564613210513,
+    "word_count_accuracy": 53.75,
+    "generation_time": 26.018765687942505,
+    "heading_structure_score": 1.0,
+    "seo_requirements_score": 0.8333333333333334,
+    "details": {
+      "actual_word_count": 1170,
+      "target_word_count": 800,
+      "keyword_occurrences": 12,
+      "heading_hierarchy_issues": [],
+      "seo_checklist": {
+        "keyword_in_title": false,
+        "keyword_in_meta": true,
+        "keyword_in_intro": true,
+        "keyword_in_conclusion": true,
+        "has_meta_description": true,
+        "meta_description_length_ok": true
+      }
+    },
+    "timestamp": "2025-11-25T00:10:02.381540",
+    "passes_requirements": false,
+    "metadata": {
+      "topic": "Benefits of Vitamin C for Skin",
+      "keyword": "vitamin c serum",
+      "test_type": "brand_voice_embeddings"
+    }
+  },
+  {
+    "content_quality_score": 86.57703703703704,
+    "brand_voice_similarity": 0.85,
+    "keyword_density": 2.42024202420242,
+    "readability_score": 51.43908036354941,
+    "word_count_accuracy": 86.375,
+    "generation_time": 21.358790636062622,
+    "heading_structure_score": 1.0,
+    "seo_requirements_score": 0.8333333333333334,
+    "details": {
+      "actual_word_count": 909,
+      "target_word_count": 800,
+      "keyword_occurrences": 22,
+      "heading_hierarchy_issues": [],
+      "seo_checklist": {
+        "keyword_in_title": false,
+        "keyword_in_meta": true,
+        "keyword_in_intro": true,
+        "keyword_in_conclusion": true,
+        "has_meta_description": true,
+        "meta_description_length_ok": true
+      }
+    },
+    "timestamp": "2025-11-25T00:18:34.140044",
+    "passes_requirements": false,
+    "metadata": {
+      "topic": "Benefits of Vitamin C for Skin",
+      "keyword": "vitamin c serum",
+      "test_type": "brand_voice_embeddings"
+    }
+  },
+  {
+    "content_quality_score": 84.57790272151412,
+    "brand_voice_similarity": 0.85,
+    "keyword_density": 1.6363636363636365,
+    "readability_score": 53.51720096892751,
+    "word_count_accuracy": 62.5,
+    "generation_time": 24.517922163009644,
+    "heading_structure_score": 1.0,
+    "seo_requirements_score": 0.8333333333333334,
+    "details": {
+      "actual_word_count": 1100,
+      "target_word_count": 800,
+      "keyword_occurrences": 18,
+      "heading_hierarchy_issues": [],
+      "seo_checklist": {
+        "keyword_in_title": false,
+        "keyword_in_meta": true,
+        "keyword_in_intro": true,
+        "keyword_in_conclusion": true,
+        "has_meta_description": true,
+        "meta_description_length_ok": true
+      }
+    },
+    "timestamp": "2025-11-25T00:24:44.429346",
+    "passes_requirements": false,
+    "metadata": {
+      "topic": "Benefits of Vitamin C for Skin",
+      "keyword": "vitamin c serum",
+      "test_type": "brand_voice_embeddings"
+    }
+  },
+  {
+    "content_quality_score": 86.99405405405406,
+    "brand_voice_similarity": 0.85,
+    "keyword_density": 1.7316017316017316,
+    "readability_score": 43.18001163752976,
+    "word_count_accuracy": 26.749999999999996,
+    "generation_time": 22.759767055511475,
+    "heading_structure_score": 1.0,
+    "seo_requirements_score": 0.8333333333333334,
+    "details": {
+      "actual_word_count": 1386,
+      "target_word_count": 800,
+      "keyword_occurrences": 24,
+      "heading_hierarchy_issues": [],
+      "seo_checklist": {
+        "keyword_in_title": false,
+        "keyword_in_meta": true,
+        "keyword_in_intro": true,
+        "keyword_in_conclusion": true,
+        "has_meta_description": true,
+        "meta_description_length_ok": true
+      }
+    },
+    "timestamp": "2025-11-25T00:26:38.786024",
+    "passes_requirements": false,
+    "metadata": {
+      "topic": "Benefits of Vitamin C for Skin",
+      "keyword": "vitamin c serum",
+      "test_type": "brand_voice_embeddings"
+    }
+  },
+  {
+    "content_quality_score": 88.14,
+    "brand_voice_similarity": 0.85,
+    "keyword_density": 1.285583103764922,
+    "readability_score": 39.929154086995425,
+    "word_count_accuracy": 63.87499999999999,
+    "generation_time": 19.306063175201416,
+    "heading_structure_score": 1.0,
+    "seo_requirements_score": 0.8333333333333334,
+    "details": {
+      "actual_word_count": 1089,
+      "target_word_count": 800,
+      "keyword_occurrences": 14,
+      "heading_hierarchy_issues": [],
+      "seo_checklist": {
+        "keyword_in_title": false,
+        "keyword_in_meta": true,
+        "keyword_in_intro": true,
+        "keyword_in_conclusion": true,
+        "has_meta_description": true,
+        "meta_description_length_ok": true
+      }
+    },
+    "timestamp": "2025-11-25T00:28:06.771532",
+    "passes_requirements": false,
+    "metadata": {
+      "topic": "Benefits of Vitamin C for Skin",
+      "keyword": "vitamin c serum",
+      "test_type": "brand_voice_embeddings"
+    }
+  },
+  {
+    "content_quality_score": 87.71600000000001,
+    "brand_voice_similarity": 0.85,
+    "keyword_density": 1.3274336283185841,
+    "readability_score": 45.1609,
+    "word_count_accuracy": 58.75,
+    "generation_time": 17.697426080703735,
+    "heading_structure_score": 1.0,
+    "seo_requirements_score": 0.6666666666666666,
+    "details": {
+      "actual_word_count": 1130,
+      "target_word_count": 800,
+      "keyword_occurrences": 15,
+      "heading_hierarchy_issues": [],
+      "seo_checklist": {
+        "keyword_in_title": false,
+        "keyword_in_meta": true,
+        "keyword_in_intro": true,
+        "keyword_in_conclusion": false,
+        "has_meta_description": true,
+        "meta_description_length_ok": true
+      }
+    },
+    "timestamp": "2025-11-25T00:31:10.205041",
+    "passes_requirements": false,
+    "metadata": {
+      "topic": "Benefits of Vitamin C for Skin",
+      "keyword": "vitamin c serum",
+      "test_type": "brand_voice_embeddings"
+    }
+  },
+  {
+    "content_quality_score": 88.14256410256411,
+    "brand_voice_similarity": 0.85,
+    "keyword_density": 0.8914525432616675,
+    "readability_score": 46.54439128399915,
+    "word_count_accuracy": 72.86666666666667,
+    "generation_time": 37.45507597923279,
+    "heading_structure_score": 1.0,
+    "seo_requirements_score": 1.0,
+    "details": {
+      "actual_word_count": 1907,
+      "target_word_count": 1500,
+      "keyword_occurrences": 17,
+      "heading_hierarchy_issues": [],
+      "seo_checklist": {
+        "keyword_in_title": true,
+        "keyword_in_meta": true,
+        "keyword_in_intro": true,
+        "keyword_in_conclusion": true,
+        "has_meta_description": true,
+        "meta_description_length_ok": true
+      }
+    },
+    "timestamp": "2025-11-25T11:19:45.113629",
+    "passes_requirements": false,
+    "metadata": {
+      "topic": "retinol skincare routine",
+      "keyword": "skincare routine",
+      "word_count": 1500
+    }
+  },
+  {
+    "content_quality_score": 88.1791304347826,
+    "brand_voice_similarity": 0.85,
+    "keyword_density": 1.565217391304348,
+    "readability_score": 37.15706526290603,
+    "word_count_accuracy": 56.25,
+    "generation_time": 26.04951524734497,
+    "heading_structure_score": 1.0,
+    "seo_requirements_score": 0.8333333333333334,
+    "details": {
+      "actual_word_count": 1150,
+      "target_word_count": 800,
+      "keyword_occurrences": 18,
+      "heading_hierarchy_issues": [],
+      "seo_checklist": {
+        "keyword_in_title": false,
+        "keyword_in_meta": true,
+        "keyword_in_intro": true,
+        "keyword_in_conclusion": true,
+        "has_meta_description": true,
+        "meta_description_length_ok": true
+      }
+    },
+    "timestamp": "2025-11-25T11:44:42.802875",
+    "passes_requirements": false,
+    "metadata": {
+      "topic": "Benefits of Vitamin C for Skin",
+      "keyword": "vitamin c serum",
+      "test_type": "brand_voice_embeddings"
+    }
+  },
+  {
+    "content_quality_score": 86.77478260869566,
+    "brand_voice_similarity": 0.85,
+    "keyword_density": 2.5485436893203883,
+    "readability_score": 42.66082649744624,
+    "word_count_accuracy": 97.0,
+    "generation_time": 15.705119848251343,
+    "heading_structure_score": 1.0,
+    "seo_requirements_score": 0.8333333333333334,
+    "details": {
+      "actual_word_count": 824,
+      "target_word_count": 800,
+      "keyword_occurrences": 21,
+      "heading_hierarchy_issues": [],
+      "seo_checklist": {
+        "keyword_in_title": false,
+        "keyword_in_meta": true,
+        "keyword_in_intro": true,
+        "keyword_in_conclusion": true,
+        "has_meta_description": true,
+        "meta_description_length_ok": true
+      }
+    },
+    "timestamp": "2025-11-25T11:46:21.551562",
+    "passes_requirements": false,
+    "metadata": {
+      "topic": "Benefits of Vitamin C for Skin",
+      "keyword": "vitamin c serum",
+      "test_type": "brand_voice_embeddings"
+    }
+  },
+  {
+    "content_quality_score": 79.94978102724343,
+    "brand_voice_similarity": 0.85,
+    "keyword_density": 2.0706455542021924,
+    "readability_score": 58.36351393188855,
+    "word_count_accuracy": 97.375,
+    "generation_time": 16.92014718055725,
+    "heading_structure_score": 1.0,
+    "seo_requirements_score": 0.8333333333333334,
+    "details": {
+      "actual_word_count": 821,
+      "target_word_count": 800,
+      "keyword_occurrences": 17,
+      "heading_hierarchy_issues": [],
+      "seo_checklist": {
+        "keyword_in_title": false,
+        "keyword_in_meta": true,
+        "keyword_in_intro": true,
+        "keyword_in_conclusion": true,
+        "has_meta_description": true,
+        "meta_description_length_ok": true
+      }
+    },
+    "timestamp": "2025-11-25T11:47:36.862419",
+    "passes_requirements": false,
+    "metadata": {
+      "topic": "Benefits of Vitamin C for Skin",
+      "keyword": "vitamin c serum",
+      "test_type": "brand_voice_embeddings"
+    }
+  },
+  {
+    "content_quality_score": 80.20626167330242,
+    "brand_voice_similarity": 0.85,
+    "keyword_density": 1.4981273408239701,
+    "readability_score": 59.690931194433745,
+    "word_count_accuracy": 99.875,
+    "generation_time": 16.594937086105347,
+    "heading_structure_score": 1.0,
+    "seo_requirements_score": 0.8333333333333334,
+    "details": {
+      "actual_word_count": 801,
+      "target_word_count": 800,
+      "keyword_occurrences": 12,
+      "heading_hierarchy_issues": [],
+      "seo_checklist": {
+        "keyword_in_title": false,
+        "keyword_in_meta": true,
+        "keyword_in_intro": true,
+        "keyword_in_conclusion": true,
+        "has_meta_description": true,
+        "meta_description_length_ok": true
+      }
+    },
+    "timestamp": "2025-11-25T11:48:23.802111",
+    "passes_requirements": false,
+    "metadata": {
+      "topic": "Benefits of Vitamin C for Skin",
+      "keyword": "vitamin c serum",
+      "test_type": "brand_voice_embeddings"
+    }
+  },
+  {
+    "content_quality_score": 82.95746869465256,
+    "brand_voice_similarity": 0.85,
+    "keyword_density": 1.509433962264151,
+    "readability_score": 58.685794655414924,
+    "word_count_accuracy": 99.375,
+    "generation_time": 32.94948983192444,
+    "heading_structure_score": 1.0,
+    "seo_requirements_score": 0.8333333333333334,
+    "details": {
+      "actual_word_count": 795,
+      "target_word_count": 800,
+      "keyword_occurrences": 12,
+      "heading_hierarchy_issues": [],
+      "seo_checklist": {
+        "keyword_in_title": false,
+        "keyword_in_meta": true,
+        "keyword_in_intro": true,
+        "keyword_in_conclusion": true,
+        "has_meta_description": true,
+        "meta_description_length_ok": true
+      }
+    },
+    "timestamp": "2025-11-25T12:12:59.182598",
+    "passes_requirements": false,
+    "metadata": {
+      "topic": "Benefits of Vitamin C for Skin",
+      "keyword": "vitamin c serum",
+      "test_type": "brand_voice_embeddings"
+    }
+  }
+]
