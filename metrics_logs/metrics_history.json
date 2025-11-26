@@ -1195,5 +1195,67 @@
       "keyword": "skincare routine morning",
       "word_count": 1000
     }
+  },
+  {
+    "content_quality_score": 81.78942071948558,
+    "brand_voice_similarity": 0.85,
+    "keyword_density": 1.2548262548262548,
+    "readability_score": 62.18125812976038,
+    "word_count_accuracy": 96.39999999999999,
+    "generation_time": 34.757259130477905,
+    "heading_structure_score": 1.0,
+    "seo_requirements_score": 0.8333333333333334,
+    "details": {
+      "actual_word_count": 1036,
+      "target_word_count": 1000,
+      "keyword_occurrences": 13,
+      "heading_hierarchy_issues": [],
+      "seo_checklist": {
+        "keyword_in_title": false,
+        "keyword_in_meta": true,
+        "keyword_in_intro": true,
+        "keyword_in_conclusion": true,
+        "has_meta_description": true,
+        "meta_description_length_ok": true
+      }
+    },
+    "timestamp": "2025-11-27T00:03:36.637798",
+    "passes_requirements": false,
+    "metadata": {
+      "topic": "glycolic acid for glowy skin",
+      "keyword": "skincare routine",
+      "word_count": 1000
+    }
+  },
+  {
+    "content_quality_score": 82.07753705990163,
+    "brand_voice_similarity": 0.85,
+    "keyword_density": 0.6342494714587738,
+    "readability_score": 60.23844447396388,
+    "word_count_accuracy": 94.6,
+    "generation_time": 26.47760248184204,
+    "heading_structure_score": 1.0,
+    "seo_requirements_score": 0.6666666666666666,
+    "details": {
+      "actual_word_count": 946,
+      "target_word_count": 1000,
+      "keyword_occurrences": 6,
+      "heading_hierarchy_issues": [],
+      "seo_checklist": {
+        "keyword_in_title": false,
+        "keyword_in_meta": false,
+        "keyword_in_intro": true,
+        "keyword_in_conclusion": true,
+        "has_meta_description": true,
+        "meta_description_length_ok": true
+      }
+    },
+    "timestamp": "2025-11-27T00:07:17.588001",
+    "passes_requirements": false,
+    "metadata": {
+      "topic": "water for better skin hydration",
+      "keyword": "skin hydration water ",
+      "word_count": 1000
+    }
   }
 ]

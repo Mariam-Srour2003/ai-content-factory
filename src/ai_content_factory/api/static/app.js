@@ -228,6 +228,13 @@ async function generateContent(event) {
     
     const form = event.target;
     const formData = new FormData(form);
+
+    // Clear any previous task/polling to avoid stale status updates
+    if (pollInterval) {
+        clearInterval(pollInterval);
+        pollInterval = null;
+    }
+    currentTaskId = null;
     
     const requestData = {
         topic: formData.get('topic'),
@@ -251,7 +258,17 @@ async function generateContent(event) {
 
         // Show progress modal
         showProgressModal();
-        
+
+        // Fetch and render initial status immediately to avoid flash
+        try {
+            const initialResp = await fetch(`${API_BASE}/api/content/status/${currentTaskId}`);
+            const initialStatus = await initialResp.json();
+            updateProgressModal(initialStatus);
+        } catch (e) {
+            // If initial fetch fails, still proceed with polling
+            console.warn('Initial status fetch failed, starting polling...', e);
+        }
+
         // Start polling for status
         pollGenerationStatus();
 
@@ -266,6 +283,16 @@ async function generateContent(event) {
 function showProgressModal() {
     const modal = document.getElementById('progressModal');
     modal.classList.add('active');
+    // Reset progress UI state before any polling begins
+    const progressFill = document.getElementById('progressFill');
+    const progressMessage = document.getElementById('progressMessage');
+    if (progressFill) {
+        progressFill.style.width = '0%';
+        progressFill.style.backgroundColor = '#4f46e5';
+    }
+    if (progressMessage) {
+        progressMessage.textContent = 'Initializing...';
+    }
     document.getElementById('closeProgressBtn').style.display = 'none';
 }
 
@@ -285,6 +312,8 @@ async function pollGenerationStatus() {
 
     pollInterval = setInterval(async () => {
         try {
+            // Guard against missing task id
+            if (!currentTaskId) { return; }
             const response = await fetch(`${API_BASE}/api/content/status/${currentTaskId}`);
             const status = await response.json();
 
@@ -313,13 +342,17 @@ function updateProgressModal(status) {
     const progressFill = document.getElementById('progressFill');
     const progressMessage = document.getElementById('progressMessage');
 
-    progressFill.style.width = `${status.progress}%`;
-    progressMessage.textContent = status.message;
+    const pct = typeof status.progress === 'number' ? status.progress : 0;
+    progressFill.style.width = `${pct}%`;
+    progressMessage.textContent = status.message || 'Initializing...';
 
     if (status.status === 'error') {
         progressFill.style.backgroundColor = '#ef4444';
     } else if (status.status === 'completed') {
         progressFill.style.backgroundColor = '#22c55e';
+    } else {
+        // In-progress states
+        progressFill.style.backgroundColor = '#4f46e5';
     }
 }
 
