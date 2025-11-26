@@ -234,9 +234,7 @@ async function generateContent(event) {
         target_keyword: formData.get('target_keyword'),
         word_count: parseInt(formData.get('word_count')),
         content_type: formData.get('content_type'),
-        brand_voice: formData.get('brand_voice'),
-        target_audience: formData.get('target_audience'),
-        additional_keywords: formData.get('additional_keywords')
+        target_audience: formData.get('target_audience')
     };
 
     try {
