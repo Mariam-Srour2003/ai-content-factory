@@ -373,12 +373,55 @@ async def get_dashboard_analytics():
     avg_brand_voice = 0
     avg_readability = 0
     avg_generation_time = 0
+    avg_keyword_density = 0
+    avg_word_count_accuracy = 0
+    avg_heading_structure = 0
+    avg_seo_requirements = 0
+    pass_rate = 0
     
     if metrics_history:
-        avg_quality_score = sum(m.get('content_quality_score', 0) for m in metrics_history) / len(metrics_history)
-        avg_brand_voice = sum(m.get('brand_voice_similarity', 0) for m in metrics_history) / len(metrics_history)
-        avg_readability = sum(m.get('readability_score', 0) for m in metrics_history) / len(metrics_history)
-        avg_generation_time = sum(m.get('generation_time', 0) for m in metrics_history) / len(metrics_history)
+        n = len(metrics_history)
+        avg_quality_score = sum(m.get('content_quality_score', 0) for m in metrics_history) / n
+        avg_brand_voice = sum(m.get('brand_voice_similarity', 0) for m in metrics_history) / n
+        avg_readability = sum(m.get('readability_score', 0) for m in metrics_history) / n
+        avg_generation_time = sum(m.get('generation_time', 0) for m in metrics_history) / n
+        avg_keyword_density = sum(m.get('keyword_density', 0) for m in metrics_history) / n
+        avg_word_count_accuracy = sum(m.get('word_count_accuracy', 0) for m in metrics_history) / n
+        avg_heading_structure = sum(m.get('heading_structure_score', 0) for m in metrics_history) / n
+        avg_seo_requirements = sum(m.get('seo_requirements_score', 0) for m in metrics_history) / n
+        # Compute pass rate using available metrics only (missing fields won't fail)
+        passed = 0
+        evaluable = 0
+        for m in metrics_history:
+            conditions = []
+            # Core conditions
+            if 'content_quality_score' in m:
+                conditions.append(m.get('content_quality_score', 0) >= 70)
+            if 'readability_score' in m:
+                conditions.append(m.get('readability_score', 0) >= 60)
+            if 'generation_time' in m:
+                conditions.append(m.get('generation_time', 0) <= 300)
+            # Optional conditions (evaluate if present)
+            if 'brand_voice_similarity' in m:
+                conditions.append(m.get('brand_voice_similarity', 0) >= 0.80)
+            if 'keyword_density' in m:
+                kd = m.get('keyword_density', 0)
+                conditions.append(1.0 <= kd <= 2.0)
+            if 'word_count_accuracy' in m:
+                conditions.append(m.get('word_count_accuracy', 0) >= 90)
+            if 'heading_structure_score' in m:
+                # Use slightly softer threshold here for aggregate pass rate
+                conditions.append(m.get('heading_structure_score', 0) >= 0.8)
+            if 'seo_requirements_score' in m:
+                conditions.append(m.get('seo_requirements_score', 0) >= 0.8)
+
+            # Only count items where we had at least one condition to evaluate
+            if conditions:
+                evaluable += 1
+                if all(conditions):
+                    passed += 1
+
+        pass_rate = (passed / evaluable) * 100 if evaluable else 0
     
     # Status breakdown
     status_counts = {
@@ -412,6 +455,13 @@ async def get_dashboard_analytics():
             "brand_voice": round(avg_brand_voice * 100, 1),
             "readability": round(avg_readability, 1),
             "generation_time": round(avg_generation_time, 1)
+        },
+        "advanced_metrics": {
+            "keyword_density": round(avg_keyword_density, 2),
+            "word_count_accuracy": round(avg_word_count_accuracy, 1),
+            "heading_structure": round(avg_heading_structure, 2),
+            "seo_requirements": round(avg_seo_requirements, 2),
+            "pass_rate": round(pass_rate, 1)
         },
         "status_breakdown": status_counts,
         "performance_data": performance_data,

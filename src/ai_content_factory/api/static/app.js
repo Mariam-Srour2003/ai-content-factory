@@ -537,6 +537,32 @@ async function loadAnalytics() {
                 <span class="metric-value">${data.status_breakdown.draft}</span>
             </div>
         `;
+
+        // Efficiency & Advanced Metrics (remove placeholder values)
+        const efficiency = document.getElementById('efficiencyMetrics');
+        const adv = data.advanced_metrics || { keyword_density: 0, word_count_accuracy: 0, heading_structure: 0, seo_requirements: 0, pass_rate: 0 };
+        efficiency.innerHTML = `
+            <div class="metric-row">
+                <span>Avg. Keyword Density</span>
+                <span class="metric-value">${adv.keyword_density}%</span>
+            </div>
+            <div class="metric-row">
+                <span>Word Count Accuracy</span>
+                <span class="metric-value">${adv.word_count_accuracy}%</span>
+            </div>
+            <div class="metric-row">
+                <span>Heading Structure Score</span>
+                <span class="metric-value">${adv.heading_structure}</span>
+            </div>
+            <div class="metric-row">
+                <span>SEO Requirements Score</span>
+                <span class="metric-value">${adv.seo_requirements}</span>
+            </div>
+            <div class="metric-row">
+                <span>Requirements Pass Rate</span>
+                <span class="metric-value">${adv.pass_rate}%</span>
+            </div>
+        `;
     } catch (error) {
         console.error('Error loading analytics:', error);
     }
