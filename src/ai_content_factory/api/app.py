@@ -116,7 +116,7 @@ def save_content_library(content_list: List[Dict]):
 def initialize_components():
     """Initialize content generation components."""
     global content_agent, metrics_evaluator, metrics_logger
-    
+
     try:
         content_agent = ContentWriterAgent()
         metrics_evaluator = ContentMetricsEvaluator()
@@ -138,17 +138,17 @@ async def generate_content_task(
             "progress": 10,
             "message": "Initializing content generation..."
         }
-        
+
         # Initialize if needed
         if content_agent is None:
             initialize_components()
-        
+
         # Generate content
         start_time = time.time()
-        
+
         generation_status[task_id]["progress"] = 30
         generation_status[task_id]["message"] = "Retrieving brand voice context..."
-        
+
         article = await asyncio.to_thread(
             content_agent.generate_article,
             topic=request.topic,
@@ -157,10 +157,10 @@ async def generate_content_task(
             target_audience=request.target_audience,
             content_type=request.content_type
         )
-        
+
         generation_status[task_id]["progress"] = 70
         generation_status[task_id]["message"] = "Evaluating content quality..."
-        
+
         # Evaluate metrics
         generation_time = time.time() - start_time
         metrics = metrics_evaluator.evaluate_article(
@@ -169,7 +169,7 @@ async def generate_content_task(
             primary_keyword=request.target_keyword,
             generation_time=generation_time
         )
-        
+
         # Log metrics
         metrics_logger.log_metrics(
             metrics=metrics,
@@ -179,10 +179,10 @@ async def generate_content_task(
                 "word_count": request.word_count
             }
         )
-        
+
         generation_status[task_id]["progress"] = 90
         generation_status[task_id]["message"] = "Saving content..."
-        
+
         # Save to library
         content_item = {
             "id": task_id,
@@ -198,15 +198,15 @@ async def generate_content_task(
             "meta_description": article.meta_description,
             "metrics": metrics.to_dict()
         }
-        
+
         content_library = load_content_library()
         content_library.insert(0, content_item)
         save_content_library(content_library)
-        
+
         # Save markdown file
         output_file = Path("outputs") / f"{task_id}.md"
         output_file.write_text(article.markdown_content, encoding='utf-8')
-        
+
         generation_status[task_id] = {
             "status": "completed",
             "progress": 100,
@@ -214,7 +214,7 @@ async def generate_content_task(
             "content_id": task_id,
             "content": content_item
         }
-        
+
     except Exception as e:
         logger.error(f"Content generation error: {e}", exc_info=True)
         generation_status[task_id] = {
@@ -266,16 +266,16 @@ async def generate_content(
 ):
     """Start content generation task."""
     task_id = f"content_{int(time.time() * 1000)}"
-    
+
     # Start background task
     background_tasks.add_task(generate_content_task, task_id, request)
-    
+
     generation_status[task_id] = {
         "status": "queued",
         "progress": 0,
         "message": "Task queued for generation..."
     }
-    
+
     return {
         "task_id": task_id,
         "status": "queued",
@@ -288,7 +288,7 @@ async def get_generation_status(task_id: str):
     """Get status of a content generation task."""
     if task_id not in generation_status:
         raise HTTPException(status_code=404, detail="Task not found")
-    
+
     return generation_status[task_id]
 
 
@@ -303,10 +303,10 @@ async def get_content(content_id: str):
     """Get specific content by ID."""
     content_library = load_content_library()
     content = next((item for item in content_library if item["id"] == content_id), None)
-    
+
     if not content:
         raise HTTPException(status_code=404, detail="Content not found")
-    
+
     return content
 
 
@@ -315,12 +315,12 @@ async def delete_content(content_id: str):
     """Delete content from library."""
     content_library = load_content_library()
     updated_library = [item for item in content_library if item["id"] != content_id]
-    
+
     if len(updated_library) == len(content_library):
         raise HTTPException(status_code=404, detail="Content not found")
-    
+
     save_content_library(updated_library)
-    
+
     # Try to delete the markdown file
     try:
         output_file = Path("outputs") / f"{content_id}.md"
@@ -328,7 +328,7 @@ async def delete_content(content_id: str):
             output_file.unlink()
     except Exception as e:
         logger.warning(f"Could not delete output file: {e}")
-    
+
     return {"message": "Content deleted successfully"}
 
 
@@ -337,16 +337,16 @@ async def update_content_status(content_id: str, status: str):
     """Update content status."""
     if status not in ["draft", "review", "published"]:
         raise HTTPException(status_code=400, detail="Invalid status")
-    
+
     content_library = load_content_library()
     content = next((item for item in content_library if item["id"] == content_id), None)
-    
+
     if not content:
         raise HTTPException(status_code=404, detail="Content not found")
-    
+
     content["status"] = status
     save_content_library(content_library)
-    
+
     return {"message": f"Status updated to {status}"}
 
 
@@ -354,7 +354,7 @@ async def update_content_status(content_id: str, status: str):
 async def get_dashboard_analytics():
     """Get dashboard analytics data."""
     content_library = load_content_library()
-    
+
     # Load metrics history
     metrics_file = Path("metrics_logs/metrics_history.json")
     metrics_history = []
@@ -364,10 +364,10 @@ async def get_dashboard_analytics():
                 metrics_history = json.load(f)
         except Exception as e:
             logger.error(f"Error loading metrics history: {e}")
-    
+
     # Calculate metrics-based KPIs
     total_content = len(content_library)
-    
+
     # Calculate average metrics from history
     avg_quality_score = 0
     avg_brand_voice = 0
@@ -378,7 +378,7 @@ async def get_dashboard_analytics():
     avg_heading_structure = 0
     avg_seo_requirements = 0
     pass_rate = 0
-    
+
     if metrics_history:
         n = len(metrics_history)
         avg_quality_score = sum(m.get('content_quality_score', 0) for m in metrics_history) / n
@@ -422,18 +422,18 @@ async def get_dashboard_analytics():
                     passed += 1
 
         pass_rate = (passed / evaluable) * 100 if evaluable else 0
-    
+
     # Status breakdown
     status_counts = {
         "published": len([i for i in content_library if i.get("status") == "published"]),
         "review": len([i for i in content_library if i.get("status") == "review"]),
         "draft": len([i for i in content_library if i.get("status") == "draft"])
     }
-    
+
     # Performance over time - use actual metrics
     performance_data = []
     recent_metrics = metrics_history[-10:] if len(metrics_history) > 10 else metrics_history
-    
+
     for idx, metric in enumerate(recent_metrics):
         performance_data.append({
             "index": idx + 1,
@@ -442,7 +442,7 @@ async def get_dashboard_analytics():
             "readability": round(metric.get('readability_score', 0), 1),
             "generation_time": round(metric.get('generation_time', 2), 2)
         })
-    
+
     return {
         "kpis": {
             "content_generated": total_content,
@@ -476,10 +476,10 @@ async def get_dashboard_analytics():
 async def get_metrics_history():
     """Get historical metrics data."""
     metrics_file = Path("metrics_logs/metrics_history.json")
-    
+
     if not metrics_file.exists():
         return []
-    
+
     try:
         with open(metrics_file, 'r', encoding='utf-8') as f:
             return json.load(f)
