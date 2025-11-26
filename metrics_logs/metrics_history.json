@@ -1071,5 +1071,129 @@
       "keyword": "vitamin c serum",
       "test_type": "brand_voice_embeddings"
     }
+  },
+  {
+    "content_quality_score": 81.98708142667299,
+    "brand_voice_similarity": 0.85,
+    "keyword_density": 0.5043227665706052,
+    "readability_score": 55.49792711202406,
+    "word_count_accuracy": 92.53333333333333,
+    "generation_time": 51.456685304641724,
+    "heading_structure_score": 1.0,
+    "seo_requirements_score": 0.8333333333333334,
+    "details": {
+      "actual_word_count": 1388,
+      "target_word_count": 1500,
+      "keyword_occurrences": 7,
+      "heading_hierarchy_issues": [],
+      "seo_checklist": {
+        "keyword_in_title": false,
+        "keyword_in_meta": true,
+        "keyword_in_intro": true,
+        "keyword_in_conclusion": true,
+        "has_meta_description": true,
+        "meta_description_length_ok": true
+      }
+    },
+    "timestamp": "2025-11-26T23:44:59.968353",
+    "passes_requirements": false,
+    "metadata": {
+      "topic": "retinol skincare routine",
+      "keyword": "skincare routine retinol",
+      "word_count": 1500
+    }
+  },
+  {
+    "content_quality_score": 84.21709906832035,
+    "brand_voice_similarity": 0.85,
+    "keyword_density": 0.4435994930291508,
+    "readability_score": 59.847266144006625,
+    "word_count_accuracy": 94.8,
+    "generation_time": 38.325135707855225,
+    "heading_structure_score": 1.0,
+    "seo_requirements_score": 0.8333333333333334,
+    "details": {
+      "actual_word_count": 1578,
+      "target_word_count": 1500,
+      "keyword_occurrences": 7,
+      "heading_hierarchy_issues": [],
+      "seo_checklist": {
+        "keyword_in_title": false,
+        "keyword_in_meta": true,
+        "keyword_in_intro": true,
+        "keyword_in_conclusion": true,
+        "has_meta_description": true,
+        "meta_description_length_ok": true
+      }
+    },
+    "timestamp": "2025-11-26T23:46:37.731418",
+    "passes_requirements": false,
+    "metadata": {
+      "topic": "vitamin c benefits",
+      "keyword": "skincare routine vitamin c",
+      "word_count": 1500
+    }
+  },
+  {
+    "content_quality_score": 83.15232634234115,
+    "brand_voice_similarity": 0.85,
+    "keyword_density": 0.60790273556231,
+    "readability_score": 68.3822516317334,
+    "word_count_accuracy": 98.7,
+    "generation_time": 27.19432544708252,
+    "heading_structure_score": 1.0,
+    "seo_requirements_score": 0.8333333333333334,
+    "details": {
+      "actual_word_count": 987,
+      "target_word_count": 1000,
+      "keyword_occurrences": 6,
+      "heading_hierarchy_issues": [],
+      "seo_checklist": {
+        "keyword_in_title": false,
+        "keyword_in_meta": true,
+        "keyword_in_intro": true,
+        "keyword_in_conclusion": true,
+        "has_meta_description": true,
+        "meta_description_length_ok": true
+      }
+    },
+    "timestamp": "2025-11-26T23:51:30.897374",
+    "passes_requirements": false,
+    "metadata": {
+      "topic": "importance of sunscreen",
+      "keyword": "sunscreen skin care",
+      "word_count": 1000
+    }
+  },
+  {
+    "content_quality_score": 78.8712347181393,
+    "brand_voice_similarity": 0.85,
+    "keyword_density": 0.7648183556405354,
+    "readability_score": 66.57846460444364,
+    "word_count_accuracy": 95.39999999999999,
+    "generation_time": 28.134757041931152,
+    "heading_structure_score": 1.0,
+    "seo_requirements_score": 0.8333333333333334,
+    "details": {
+      "actual_word_count": 1046,
+      "target_word_count": 1000,
+      "keyword_occurrences": 8,
+      "heading_hierarchy_issues": [],
+      "seo_checklist": {
+        "keyword_in_title": false,
+        "keyword_in_meta": true,
+        "keyword_in_intro": true,
+        "keyword_in_conclusion": true,
+        "has_meta_description": true,
+        "meta_description_length_ok": true
+      }
+    },
+    "timestamp": "2025-11-26T23:55:19.124816",
+    "passes_requirements": false,
+    "metadata": {
+      "topic": "morning skincare routine",
+      "keyword": "skincare routine morning",
+      "word_count": 1000
+    }
   }
 ]
