@@ -10,16 +10,16 @@ from datetime import datetime
 from pathlib import Path
 from typing import Dict, List, Optional
 
-from fastapi import FastAPI, HTTPException, BackgroundTasks
+from fastapi import BackgroundTasks, FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import FileResponse, HTMLResponse
 from fastapi.staticfiles import StaticFiles
-from fastapi.responses import HTMLResponse, FileResponse
 from pydantic import BaseModel, Field
 
 from ..agents.content_writer_agent import ContentWriterAgent
+from ..config.config_loader import load_config
 from ..core.metrics import ContentMetricsEvaluator
 from ..core.metrics_logger import MetricsLogger
-from ..config.config_loader import load_config
 from ..utils.logger import get_logger
 
 logger = get_logger(__name__)
@@ -61,10 +61,8 @@ class ContentGenerationRequest(BaseModel):
     topic: str = Field(..., min_length=3, max_length=200)
     target_keyword: str = Field(..., min_length=2, max_length=100)
     word_count: int = Field(default=1500, ge=500, le=5000)
-    content_type: str = Field(default="Blog Post")
-    brand_voice: str = Field(default="Professional")
-    target_audience: str = Field(default="General")
-    additional_keywords: Optional[str] = None
+    content_type: str = Field(default="blog_post")
+    target_audience: str = Field(default="general readers")
 
 
 class ContentItem(BaseModel):
