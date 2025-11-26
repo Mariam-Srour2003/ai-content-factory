@@ -854,5 +854,222 @@
       "keyword": "vitamin c serum",
       "test_type": "brand_voice_embeddings"
     }
+  },
+  {
+    "content_quality_score": 80.49095622662205,
+    "brand_voice_similarity": 0.85,
+    "keyword_density": 0.5089058524173028,
+    "readability_score": 56.62600000000003,
+    "word_count_accuracy": 42.800000000000004,
+    "generation_time": 65.19783282279968,
+    "heading_structure_score": 1.0,
+    "seo_requirements_score": 0.8333333333333334,
+    "details": {
+      "actual_word_count": 2358,
+      "target_word_count": 1500,
+      "keyword_occurrences": 12,
+      "heading_hierarchy_issues": [],
+      "seo_checklist": {
+        "keyword_in_title": true,
+        "keyword_in_meta": true,
+        "keyword_in_intro": true,
+        "keyword_in_conclusion": false,
+        "has_meta_description": true,
+        "meta_description_length_ok": true
+      }
+    },
+    "timestamp": "2025-11-25T12:44:03.438108",
+    "passes_requirements": false,
+    "metadata": {
+      "topic": "retinol skincare routine",
+      "keyword": "skincare routine",
+      "word_count": 1500
+    }
+  },
+  {
+    "content_quality_score": 87.14434782608696,
+    "brand_voice_similarity": 0.85,
+    "keyword_density": 1.639344262295082,
+    "readability_score": 51.82233283665491,
+    "word_count_accuracy": 85.625,
+    "generation_time": 34.65958857536316,
+    "heading_structure_score": 1.0,
+    "seo_requirements_score": 0.8333333333333334,
+    "details": {
+      "actual_word_count": 915,
+      "target_word_count": 800,
+      "keyword_occurrences": 15,
+      "heading_hierarchy_issues": [],
+      "seo_checklist": {
+        "keyword_in_title": false,
+        "keyword_in_meta": true,
+        "keyword_in_intro": true,
+        "keyword_in_conclusion": true,
+        "has_meta_description": true,
+        "meta_description_length_ok": true
+      }
+    },
+    "timestamp": "2025-11-25T13:06:12.240450",
+    "passes_requirements": false,
+    "metadata": {
+      "topic": "Benefits of Vitamin C for Skin",
+      "keyword": "vitamin c serum",
+      "test_type": "brand_voice_embeddings"
+    }
+  },
+  {
+    "content_quality_score": 93.34,
+    "brand_voice_similarity": 0.85,
+    "keyword_density": 1.675977653631285,
+    "readability_score": 43.74689606741575,
+    "word_count_accuracy": 88.125,
+    "generation_time": 46.244526386260986,
+    "heading_structure_score": 1.0,
+    "seo_requirements_score": 0.8333333333333334,
+    "details": {
+      "actual_word_count": 895,
+      "target_word_count": 800,
+      "keyword_occurrences": 15,
+      "heading_hierarchy_issues": [],
+      "seo_checklist": {
+        "keyword_in_title": false,
+        "keyword_in_meta": true,
+        "keyword_in_intro": true,
+        "keyword_in_conclusion": true,
+        "has_meta_description": true,
+        "meta_description_length_ok": true
+      }
+    },
+    "timestamp": "2025-11-26T15:21:36.964206",
+    "passes_requirements": false,
+    "metadata": {
+      "topic": "Benefits of Vitamin C for Skin",
+      "keyword": "vitamin c serum",
+      "test_type": "brand_voice_embeddings"
+    }
+  },
+  {
+    "content_quality_score": 87.11202693689782,
+    "brand_voice_similarity": 0.85,
+    "keyword_density": 1.644398766700925,
+    "readability_score": 48.2170002233639,
+    "word_count_accuracy": 78.375,
+    "generation_time": 32.04147148132324,
+    "heading_structure_score": 1.0,
+    "seo_requirements_score": 0.8333333333333334,
+    "details": {
+      "actual_word_count": 973,
+      "target_word_count": 800,
+      "keyword_occurrences": 16,
+      "heading_hierarchy_issues": [],
+      "seo_checklist": {
+        "keyword_in_title": false,
+        "keyword_in_meta": true,
+        "keyword_in_intro": true,
+        "keyword_in_conclusion": true,
+        "has_meta_description": true,
+        "meta_description_length_ok": true
+      }
+    },
+    "timestamp": "2025-11-26T15:25:21.679718",
+    "passes_requirements": false,
+    "metadata": {
+      "topic": "Benefits of Vitamin C for Skin",
+      "keyword": "vitamin c serum",
+      "test_type": "brand_voice_embeddings"
+    }
+  },
+  {
+    "content_quality_score": 84.00492981766052,
+    "brand_voice_similarity": 0.85,
+    "keyword_density": 2.0874751491053676,
+    "readability_score": 57.102414357296254,
+    "word_count_accuracy": 74.25,
+    "generation_time": 35.035948753356934,
+    "heading_structure_score": 1.0,
+    "seo_requirements_score": 0.8333333333333334,
+    "details": {
+      "actual_word_count": 1006,
+      "target_word_count": 800,
+      "keyword_occurrences": 21,
+      "heading_hierarchy_issues": [],
+      "seo_checklist": {
+        "keyword_in_title": false,
+        "keyword_in_meta": true,
+        "keyword_in_intro": true,
+        "keyword_in_conclusion": true,
+        "has_meta_description": true,
+        "meta_description_length_ok": true
+      }
+    },
+    "timestamp": "2025-11-26T15:26:59.818382",
+    "passes_requirements": false,
+    "metadata": {
+      "topic": "Benefits of Vitamin C for Skin",
+      "keyword": "vitamin c serum",
+      "test_type": "brand_voice_embeddings"
+    }
+  },
+  {
+    "content_quality_score": 82.2875195238239,
+    "brand_voice_similarity": 0.85,
+    "keyword_density": 1.843817787418655,
+    "readability_score": 56.60518723469454,
+    "word_count_accuracy": 84.75,
+    "generation_time": 31.482607126235962,
+    "heading_structure_score": 1.0,
+    "seo_requirements_score": 0.8333333333333334,
+    "details": {
+      "actual_word_count": 922,
+      "target_word_count": 800,
+      "keyword_occurrences": 17,
+      "heading_hierarchy_issues": [],
+      "seo_checklist": {
+        "keyword_in_title": false,
+        "keyword_in_meta": true,
+        "keyword_in_intro": true,
+        "keyword_in_conclusion": true,
+        "has_meta_description": true,
+        "meta_description_length_ok": true
+      }
+    },
+    "timestamp": "2025-11-26T15:28:38.242041",
+    "passes_requirements": false,
+    "metadata": {
+      "topic": "Benefits of Vitamin C for Skin",
+      "keyword": "vitamin c serum",
+      "test_type": "brand_voice_embeddings"
+    }
+  },
+  {
+    "content_quality_score": 77.71339185686253,
+    "brand_voice_similarity": 0.85,
+    "keyword_density": 1.6985138004246285,
+    "readability_score": 63.01066586050197,
+    "word_count_accuracy": 82.25,
+    "generation_time": 43.16651630401611,
+    "heading_structure_score": 1.0,
+    "seo_requirements_score": 0.8333333333333334,
+    "details": {
+      "actual_word_count": 942,
+      "target_word_count": 800,
+      "keyword_occurrences": 16,
+      "heading_hierarchy_issues": [],
+      "seo_checklist": {
+        "keyword_in_title": false,
+        "keyword_in_meta": true,
+        "keyword_in_intro": true,
+        "keyword_in_conclusion": true,
+        "has_meta_description": true,
+        "meta_description_length_ok": true
+      }
+    },
+    "timestamp": "2025-11-26T15:51:40.809010",
+    "passes_requirements": false,
+    "metadata": {
+      "topic": "Benefits of Vitamin C for Skin",
+      "keyword": "vitamin c serum",
+      "test_type": "brand_voice_embeddings"
+    }
   }
 ]

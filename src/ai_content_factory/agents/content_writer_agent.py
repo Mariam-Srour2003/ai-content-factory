@@ -3,6 +3,7 @@ LangChain/LangGraph-based Content Writer Agent
 Refactored for multi-agent workflow compatibility using LangGraph state machines.
 """
 
+import re
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Any, Dict, List, Optional, TypedDict
@@ -24,7 +25,7 @@ BODY_WORD_RATIO = 0.78
 WORDS_PER_SECTION = 250
 MIN_SECTIONS = 3
 MAX_SECTIONS = 7
-KEYWORD_FREQUENCY = 300  # 1 keyword per N words (increased from 250 to target ~1.5% density)
+KEYWORD_FREQUENCY = 200  # 1 keyword per N words (target ~1.5-2% density)
 DEFAULT_BRAND_VOICE = "Direct, educational, accessible. Example: 'Skin is a complex organ. Your skincare doesn't have to be.'"
 
 
@@ -308,30 +309,39 @@ class ContentWriterAgent:
 
     # ========== Workflow Node Functions ==========
 
-    def _clean_meta_text(self, text: str) -> str:
-        """Clean up meta-text artifacts from LLM output.
-
-        Removes phrases like 'Okay, here's...', 'Here's a...', quotes, and other meta-commentary.
+    def _clean_meta_text_strict(self, text: str) -> str:
+        """Enhanced meta-text cleaning with strict pattern matching.
 
         Args:
             text: Raw LLM output
 
         Returns:
-            Cleaned text
+            Cleaned text with meta-commentary removed
         """
-        import re
+        # Remove entire first paragraph if it contains meta-text
+        paragraphs = text.split('\n\n')
+        if paragraphs:
+            first_para_lower = paragraphs[0].lower()
+            meta_indicators = [
+                'here\'s', 'here is', 'okay', 'let me', 'i\'ll', 'i will',
+                'aiming for', 'word count', 'as an ai', 'as a', 'certainly'
+            ]
+            if any(indicator in first_para_lower for indicator in meta_indicators):
+                text = '\n\n'.join(paragraphs[1:]) if len(paragraphs) > 1 else paragraphs[0]
 
-        # Remove common meta-text patterns
+        # Pattern-based cleaning
         patterns = [
-            r'^\s*Okay,?\s+here[\'\'\"s]+ (an? )?\w+.*?:\s*',  # "Okay, here's an introduction:"
-            r'^\s*Here[\'\'\"s]+ (an? )?\w+.*?:\s*',  # "Here's a section:"
-            r'^\s*[\"\']+(.*?)[\"\']+\s*$',  # Wrapping quotes
-            r'\n\n---\n\n\*\*Word Count:\*\*.*',  # Word count notes
-            r'^\s*\[.*?\]\s*',  # [Link to...]
+            r'^["\'](.+?)["\']$',  # Remove wrapping quotes
+            r'^\s*(Okay,?|Sure,?|Certainly,?)\s+',  # Remove agreement phrases
+            r'^["\']?\s*Here[\'s]+\s+.{0,50}?:\s*["\']?\s*',  # "Here's a/an/the..."
+            r'\n\n---\n\n\*\*Word Count:?\*\*.*$',  # Word count notes
+            r'\*\*\[.*?\]\*\*',  # Markdown link artifacts
+            r'^\s*\[.*?\]\s*',  # [Bracket notes]
         ]
 
         for pattern in patterns:
-            text = re.sub(pattern, '', text, flags=re.IGNORECASE | re.DOTALL | re.MULTILINE)
+            text = re.sub(pattern, '', text, flags=re.IGNORECASE | re.MULTILINE)
+
         return text.strip()
 
     def _retrieve_brand_voice_node(self, state: ContentState) -> ContentState:
@@ -479,34 +489,40 @@ List {num_sections} section titles (one per line):"""
 
             target_words = state["outline"]["introduction"]["word_count"]
 
-            system_prompt = """Write simple, direct introductions.
-Use short sentences (6-10 words average).
-Simple words only. Break complex ideas into separate sentences.
+            system_prompt = """You are a professional content writer. OUTPUT MUST BE ONLY the article text requested — no explanations, no meta-commentary, no numbered reasoning, and no leading phrases such as "Here's", "Okay", "Let me", "As an AI", "I will". Do not include quotes around the content. Do not add labels like "Introduction:", "Section:", or "Conclusion:" unless explicitly asked. Follow the exact word count and formatting instructions in the user prompt. If you cannot follow the instructions, return exactly the string: [UNABLE_TO_COMPLY].
 
-Write complete content. No meta-commentary."""
+CRITICAL: Write with very short sentences (8-14 words average). Most sentences must be 10-12 words. This is essential for readability. Use simple 6th-7th grade vocabulary only."""
 
             brand_examples = state.get('brand_voice_context', DEFAULT_BRAND_VOICE)
 
-            user_prompt = f"""Write EXACTLY {target_words} words introducing: {state['target_keyword']}
+            user_prompt = f"""Write exactly {target_words} words (±5 words) for an introduction about: {state['target_keyword']}
 
-Start with "{state['target_keyword']}" in first sentence. Use it 2 times total.
-Short sentences. Simple words. Reach {target_words} words.
-No explanations.
+CRITICAL REQUIREMENT - SHORT SENTENCES:
+• MOST sentences must be 8-12 words (this is essential!)
+• MAXIMUM sentence length: 14 words (very rarely 15)
+• NO sentences over 15 words
+• Use simple words only (6th-7th grade level)
 
-Brand voice:
-{brand_examples}
+CONTENT REQUIREMENTS:
+• Start with a short hook (question or fact) - max 10 words
+• Include "{state['target_keyword']}" naturally 2-3 times
+• Write 4-5 very short paragraphs (2 sentences each)
+• Make it conversational and friendly
 
-BEGIN WRITING NOW:"""
+Brand voice style:
+{brand_examples[:300]}
+
+Write ONLY the introduction text (exactly {target_words} words):"""
 
             introduction = self.llm.generate(
                 prompt=user_prompt,
                 system_prompt=system_prompt,
-                max_tokens=2000,
-                temperature=0.45
+                max_tokens=2500,
+                temperature=0.7
             )
 
             # Clean up meta-text artifacts aggressively
-            introduction = self._clean_meta_text(introduction)
+            introduction = self._clean_meta_text_strict(introduction)
 
             # Additional cleanup: remove first paragraph if it contains meta-text
             paragraphs = introduction.split('\n\n')
@@ -541,11 +557,9 @@ BEGIN WRITING NOW:"""
 
             target_words = section_info["word_count"]
 
-            system_prompt = """Write clear, simple content.
-Short sentences (6-10 words).
-Simple words. One idea per sentence.
+            system_prompt = """You are a professional content writer. OUTPUT MUST BE ONLY the article text requested — no explanations, no meta-commentary, no numbered reasoning, and no leading phrases such as "Here's", "Okay", "Let me", "As an AI", "I will". Do not include quotes around the content. Do not add labels like "Introduction:", "Section:", or "Conclusion:" unless explicitly asked. Follow the exact word count and formatting instructions in the user prompt. If you cannot follow the instructions, return exactly the string: [UNABLE_TO_COMPLY].
 
-No meta-commentary. Just content."""
+CRITICAL: Write with very short sentences (8-14 words average). Most sentences must be 10-12 words. Use simple 6th-7th grade vocabulary only. Short paragraphs (2-3 sentences)."""
 
             keyword = state['target_keyword']
             # Calculate keyword density using constant
@@ -553,26 +567,35 @@ No meta-commentary. Just content."""
 
             brand_examples = state.get('brand_voice_context', DEFAULT_BRAND_VOICE)
 
-            user_prompt = f"""Write EXACTLY {target_words} words about: {section_info['title']}
+            user_prompt = f"""Write exactly {target_words} words (±10 words) for this section: {section_info['title']}
 
-Include "{keyword}" {target_keyword_count} times naturally.
-Short sentences. Simple words. Reach {target_words} words.
-No explanations.
+CRITICAL REQUIREMENT - SHORT SENTENCES:
+• MOST sentences must be 8-12 words (this is essential!)
+• MAXIMUM sentence length: 14 words (very rarely 15)
+• NO sentences over 15 words
+• Use simple words only (6th-7th grade level)
 
-Brand voice:
+CONTENT REQUIREMENTS:
+• Include "{keyword}" naturally {target_keyword_count} times
+• Write 5-7 very short paragraphs (2-3 sentences each)
+• Provide helpful, specific information
+• Use concrete examples
+• Make it conversational
+
+Brand voice style:
 {brand_examples[:300]}
 
-BEGIN WRITING NOW:"""
+Write ONLY the section content (exactly {target_words} words, no heading):"""
 
             section_content = self.llm.generate(
                 prompt=user_prompt,
                 system_prompt=system_prompt,
-                max_tokens=2500,
-                temperature=0.45
+                max_tokens=3000,
+                temperature=0.7
             )
 
             # Clean up meta-text artifacts
-            section_content = self._clean_meta_text(section_content)
+            section_content = self._clean_meta_text_strict(section_content)
 
             # Ensure proper heading format
             section_content = section_content.strip()
@@ -632,11 +655,9 @@ BEGIN WRITING NOW:"""
 
             brand_examples = state.get('brand_voice_context', DEFAULT_BRAND_VOICE)
 
-            system_prompt = """Write clear, simple conclusions.
-Short sentences (8-12 words).
-Summarize key points.
+            system_prompt = """You are a professional content writer. OUTPUT MUST BE ONLY the article text requested — no explanations, no meta-commentary, no numbered reasoning, and no leading phrases such as "Here's", "Okay", "Let me", "As an AI", "I will". Do not include quotes around the content. Do not add labels like "Introduction:", "Section:", or "Conclusion:" unless explicitly asked. Follow the exact word count and formatting instructions in the user prompt. If you cannot follow the instructions, return exactly the string: [UNABLE_TO_COMPLY].
 
-No meta-commentary."""
+CRITICAL: Write with very short sentences (8-14 words average). Most sentences must be 10-12 words. Use simple 6th-7th grade vocabulary only."""
 
             # Get section summaries for context
             key_points = "\n".join([
@@ -646,29 +667,37 @@ No meta-commentary."""
 
             brand_examples = state.get('brand_voice_context', DEFAULT_BRAND_VOICE)
 
-            user_prompt = f"""Write EXACTLY {target_words} words concluding this article about {state['target_keyword']}.
+            user_prompt = f"""Write exactly {target_words} words (±5 words) for a conclusion about {state['target_keyword']}.
 
-Key points:
+Key points covered:
 {key_points}
 
-Mention "{state['target_keyword']}" once.
-Write {target_words} words total.
-No explanations.
+CRITICAL REQUIREMENT - SHORT SENTENCES:
+• MOST sentences must be 8-12 words (this is essential!)
+• MAXIMUM sentence length: 14 words
+• NO sentences over 15 words
+• Use simple words only (6th-7th grade level)
 
-Brand voice:
+CONTENT REQUIREMENTS:
+• Mention "{state['target_keyword']}" once naturally
+• Summarize main takeaways
+• End with encouragement
+• Write 3-4 very short paragraphs
+
+Brand voice style:
 {brand_examples[:200]}
 
-BEGIN WRITING NOW:"""
+Write ONLY the conclusion text (exactly {target_words} words):"""
 
             conclusion = self.llm.generate(
                 prompt=user_prompt,
                 system_prompt=system_prompt,
-                max_tokens=1500,
-                temperature=0.45
+                max_tokens=2000,
+                temperature=0.7
             )
 
             # Clean up meta-text artifacts
-            conclusion = self._clean_meta_text(conclusion)
+            conclusion = self._clean_meta_text_strict(conclusion)
             state["conclusion"] = conclusion.strip()
             logger.info(f"Conclusion written: {len(state['conclusion'].split())} words")
 
@@ -690,14 +719,13 @@ BEGIN WRITING NOW:"""
         try:
             logger.info("Generating call-to-action")
 
-            system_prompt = """Write 2 short call-to-action sentences.
-Friendly tone. Under 12 words each."""
+            system_prompt = """You are a professional content writer. OUTPUT MUST BE ONLY the article text requested — no explanations, no meta-commentary, no numbered reasoning, and no leading phrases such as "Here's", "Okay", "Let me", "As an AI", "I will". Do not include quotes around the content.
 
-            user_prompt = f"""Write 2 sentences inviting readers to explore {state['target_keyword']}.
+Write 2 short call-to-action sentences. Friendly tone. Under 12 words each."""
 
-Just the 2 sentences. No explanations.
+            user_prompt = f"""Write 2 friendly sentences (under 12 words each) inviting readers to explore {state['target_keyword']}.
 
-BEGIN:"""
+Write ONLY the 2 sentences:"""
 
             cta = self.llm.generate(
                 prompt=user_prompt,
