@@ -1116,3 +1116,521 @@ function displayTopicAnalysisResults(data) {
         ` : ''}
     `;
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+// ==================== SEO Strategy Functions ====================
+
+function showSEOSection(section) {
+    // Hide all sections
+    document.querySelectorAll('.seo-section').forEach(sec => {
+        sec.classList.remove('active');
+    });
+    
+    // Remove active class from all buttons
+    document.querySelectorAll('.seo-tab-btn').forEach(btn => {
+        btn.classList.remove('active');
+    });
+    
+    // Show selected section
+    document.getElementById(`${section}-section`).classList.add('active');
+    
+    // Activate corresponding button
+    const activeBtn = document.querySelector(`.seo-tab-btn[onclick="showSEOSection('${section}')"]`);
+    if (activeBtn) {
+        activeBtn.classList.add('active');
+    }
+    
+    // Clear results when switching sections
+    document.getElementById('keywordResults').innerHTML = '';
+    document.getElementById('briefResults').innerHTML = '';
+}
+
+async function runQuickSEOAnalysis() {
+    showSEOSection('keywords');
+    
+    const seedTopics = ['skincare routine', 'anti-aging', 'acne treatment'];
+    
+    showLoading('keywordResults', 'Running comprehensive SEO analysis...');
+    
+    try {
+        // CORRECTED: Direct object, not nested
+        const requestData = {
+            seed_topics: seedTopics,
+            max_keywords_per_topic: 20
+        };
+        
+        console.log('Quick SEO analysis request:', requestData);
+        
+        const response = await fetch('/api/seo/research-keywords', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(requestData)
+        });
+        
+        if (!response.ok) {
+            const errorText = await response.text();
+            throw new Error(`HTTP ${response.status}: ${errorText}`);
+        }
+        
+        const result = await response.json();
+        
+        if (result.status === 'success') {
+            displayKeywordResults(result.data);
+        } else {
+            showError('keywordResults', result.message);
+        }
+    } catch (error) {
+        console.error('Quick SEO analysis error:', error);
+        showError('keywordResults', 'SEO analysis failed: ' + error.message);
+    }
+}
+
+async function researchKeywords() {
+    const seedTopicsInput = document.getElementById('seedTopics').value;
+    const seedTopics = seedTopicsInput.split(',').map(t => t.trim()).filter(t => t.length > 0);
+    const maxKeywords = parseInt(document.getElementById('maxKeywords').value) || 20;
+    
+    // Validate input
+    if (seedTopics.length === 0) {
+        alert('Please enter at least one seed topic');
+        return;
+    }
+    
+    showLoading('keywordResults', 'Researching keywords...');
+    
+    try {
+        // CORRECTED: The request body should be the data object itself, not nested
+        const requestData = {
+            seed_topics: seedTopics,
+            max_keywords_per_topic: maxKeywords
+        };
+        
+        console.log('Sending request data:', requestData);
+        
+        const response = await fetch('/api/seo/research-keywords', {
+            method: 'POST',
+            headers: { 
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(requestData)
+        });
+        
+        // Check if response is OK
+        if (!response.ok) {
+            const errorText = await response.text();
+            throw new Error(`HTTP ${response.status}: ${errorText}`);
+        }
+        
+        const result = await response.json();
+        
+        if (result.status === 'success') {
+            displayKeywordResults(result.data);
+        } else {
+            showError('keywordResults', result.message);
+        }
+    } catch (error) {
+        console.error('Keyword research error:', error);
+        showError('keywordResults', 'Keyword research failed: ' + error.message);
+    }
+}
+
+async function generateContentBriefs() {
+    const maxBriefs = parseInt(document.getElementById('maxBriefs').value) || 5;
+    
+    showLoading('briefResults', 'Generating content briefs...');
+    
+    try {
+        // CORRECTED: Direct object
+        const requestData = {
+            max_briefs: maxBriefs
+        };
+        
+        console.log('Brief generation request:', requestData);
+        
+        const response = await fetch('/api/seo/generate-briefs', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(requestData)
+        });
+        
+        if (!response.ok) {
+            const errorText = await response.text();
+            throw new Error(`HTTP ${response.status}: ${errorText}`);
+        }
+        
+        const result = await response.json();
+        
+        if (result.status === 'success') {
+            displayBriefResults(result.data);
+        } else {
+            showError('briefResults', result.message);
+        }
+    } catch (error) {
+        console.error('Brief generation error:', error);
+        showError('briefResults', 'Brief generation failed: ' + error.message);
+    }
+}
+
+async function loadKeywordResearch() {
+    showLoading('seo-insights-content', 'Loading keyword research...');
+    
+    try {
+        const response = await fetch('/api/seo/keyword-research');
+        const result = await response.json();
+        
+        if (result.status === 'success') {
+            displaySEOInsights(result.data);
+        } else {
+            showError('seo-insights-content', result.message);
+        }
+    } catch (error) {
+        showError('seo-insights-content', 'Failed to load keyword research: ' + error.message);
+    }
+}
+
+async function loadContentBriefs() {
+    showLoading('seo-insights-content', 'Loading content briefs...');
+    
+    try {
+        const response = await fetch('/api/seo/content-briefs');
+        const result = await response.json();
+        
+        if (result.status === 'success') {
+            displayContentBriefs(result.data);
+        } else {
+            showError('seo-insights-content', result.message);
+        }
+    } catch (error) {
+        showError('seo-insights-content', 'Failed to load content briefs: ' + error.message);
+    }
+}
+
+function displayKeywordResults(data) {
+    const container = document.getElementById('keywordResults');
+    
+    if (!data) {
+        showError('keywordResults', 'No data received from keyword research');
+        return;
+    }
+    
+    // Check if we have keywords
+    const keywords = data.keywords || [];
+    const clusters = data.cluster_analysis || {};
+    
+    container.innerHTML = `
+        <div class="seo-summary">
+            <h3>📊 Keyword Research Summary</h3>
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <h4>${data.total_keywords_generated || 0}</h4>
+                    <p>Keywords Generated</p>
+                </div>
+                <div class="stat-card">
+                    <h4>${keywords.length}</h4>
+                    <p>Top Keywords</p>
+                </div>
+                <div class="stat-card">
+                    <h4>${Object.keys(clusters).length}</h4>
+                    <p>Topic Clusters</p>
+                </div>
+            </div>
+        </div>
+        
+        ${keywords.length > 0 ? `
+        <div class="research-section-card">
+            <h4>🎯 Top Priority Keywords</h4>
+            <div class="keywords-table">
+                <table class="content-table">
+                    <thead>
+                        <tr>
+                            <th>Keyword</th>
+                            <th>Volume</th>
+                            <th>Difficulty</th>
+                            <th>Intent</th>
+                            <th>Priority Score</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        ${keywords.slice(0, 10).map(keyword => `
+                            <tr>
+                                <td><strong>${keyword.keyword || 'N/A'}</strong></td>
+                                <td>${(keyword.search_volume || 0).toLocaleString()}</td>
+                                <td>
+                                    <div class="difficulty-bar">
+                                        <div class="difficulty-fill" style="width: ${keyword.difficulty || 0}%"></div>
+                                        <span>${keyword.difficulty || 0}/100</span>
+                                    </div>
+                                </td>
+                                <td>
+                                    <span class="intent-badge intent-${keyword.intent || 'informational'}">
+                                        ${keyword.intent || 'informational'}
+                                    </span>
+                                </td>
+                                <td>
+                                    <div class="priority-score">
+                                        ${(keyword.priority_score || 0).toFixed(2)}
+                                    </div>
+                                </td>
+                            </tr>
+                        `).join('')}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        ` : '<div class="research-section-card"><p>No keywords generated</p></div>'}
+        
+        ${Object.keys(clusters).length > 0 ? `
+        <div class="research-section-card">
+            <h4>📈 Keyword Clusters</h4>
+            <div class="clusters-grid">
+                ${Object.values(clusters).slice(0, 6).map(cluster => `
+                    <div class="cluster-card">
+                        <h5>${cluster.label || 'Unnamed Cluster'}</h5>
+                        <p>${cluster.size || 0} keywords</p>
+                        <div class="cluster-keywords">
+                            ${(cluster.keywords || []).slice(0, 3).map(kw => `
+                                <span class="keyword-tag">${kw.keyword || 'N/A'}</span>
+                            `).join('')}
+                        </div>
+                    </div>
+                `).join('')}
+            </div>
+        </div>
+        ` : ''}
+    `;
+}
+
+function displayBriefResults(data) {
+    const container = document.getElementById('briefResults');
+    
+    if (!data || !data.content_briefs) {
+        showError('briefResults', 'No brief data received');
+        return;
+    }
+    
+    container.innerHTML = `
+        <div class="seo-summary">
+            <h3>📋 Content Briefs Generated</h3>
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <h4>${data.total_briefs_generated || 0}</h4>
+                    <p>Briefs Created</p>
+                </div>
+                <div class="stat-card">
+                    <h4>${data.content_briefs.length}</h4>
+                    <p>Ready to Use</p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="briefs-grid">
+            ${data.content_briefs.map(brief => `
+                <div class="brief-card">
+                    <div class="brief-header">
+                        <h4>${brief.target_keyword}</h4>
+                        <span class="priority-badge ${brief.priority_score > 0.7 ? 'high' : 'medium'}">
+                            Priority: ${(brief.priority_score * 100).toFixed(0)}%
+                        </span>
+                    </div>
+                    
+                    <div class="brief-metrics">
+                        <div class="metric">
+                            <span class="metric-label">Volume</span>
+                            <span class="metric-value">${brief.search_volume.toLocaleString()}</span>
+                        </div>
+                        <div class="metric">
+                            <span class="metric-label">Difficulty</span>
+                            <span class="metric-value">${brief.difficulty}/100</span>
+                        </div>
+                        <div class="metric">
+                            <span class="metric-label">Word Count</span>
+                            <span class="metric-value">${brief.target_word_count}</span>
+                        </div>
+                    </div>
+                    
+                    <div class="brief-actions">
+                        <button onclick="viewBrief('${brief.brief_id}')" class="btn-secondary btn-small">
+                            View Brief
+                        </button>
+                        <button onclick="downloadBrief('${brief.brief_id}')" class="btn-primary btn-small">
+                            Download
+                        </button>
+                    </div>
+                </div>
+            `).join('')}
+        </div>
+    `;
+}
+
+function displaySEOInsights(data) {
+    const container = document.getElementById('seo-insights-content');
+    
+    if (!data) {
+        container.innerHTML = '<p class="seo-placeholder">No SEO data available. Run keyword research first.</p>';
+        return;
+    }
+    
+    container.innerHTML = `
+        <div style="width: 100%;">
+            <div class="research-section-card">
+                <h4>📈 Keyword Research Summary</h4>
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <h4>${data.total_keywords_generated || 0}</h4>
+                        <p>Total Keywords</p>
+                    </div>
+                    <div class="stat-card">
+                        <h4>${data.keywords?.length || 0}</h4>
+                        <p>Prioritized</p>
+                    </div>
+                    <div class="stat-card">
+                        <h4>${Object.keys(data.cluster_analysis || {}).length}</h4>
+                        <p>Clusters</p>
+                    </div>
+                </div>
+            </div>
+            
+            ${data.search_intent_breakdown ? `
+            <div class="research-section-card">
+                <h4>🎯 Search Intent Breakdown</h4>
+                <div class="intent-stats">
+                    ${Object.entries(data.search_intent_breakdown).map(([intent, count]) => `
+                        <div class="intent-item">
+                            <span class="intent-badge intent-${intent}">${intent}</span>
+                            <span class="intent-count">${count} keywords</span>
+                        </div>
+                    `).join('')}
+                </div>
+            </div>
+            ` : ''}
+        </div>
+    `;
+}
+
+function displayContentBriefs(data) {
+    const container = document.getElementById('seo-insights-content');
+    
+    if (!data || !data.content_briefs) {
+        container.innerHTML = '<p class="seo-placeholder">No content briefs available. Generate briefs first.</p>';
+        return;
+    }
+    
+    container.innerHTML = `
+        <div style="width: 100%;">
+            <div class="research-section-card">
+                <h4>📋 Generated Content Briefs</h4>
+                <div class="briefs-list">
+                    ${data.content_briefs.map(brief => `
+                        <div class="brief-item">
+                            <div class="brief-item-header">
+                                <h5>${brief.target_keyword}</h5>
+                                <span class="brief-meta">${brief.target_word_count} words • ${brief.intent} intent</span>
+                            </div>
+                            <p class="brief-description">${brief.meta_description}</p>
+                            <div class="brief-stats">
+                                <span>Volume: ${brief.search_volume.toLocaleString()}</span>
+                                <span>Difficulty: ${brief.difficulty}/100</span>
+                                <span>Priority: ${(brief.priority_score * 100).toFixed(0)}%</span>
+                            </div>
+                        </div>
+                    `).join('')}
+                </div>
+            </div>
+        </div>
+    `;
+}
+
+async function viewBrief(briefId) {
+    try {
+        const response = await fetch(`/api/seo/brief/${briefId}`);
+        const result = await response.json();
+        
+        if (result.status === 'success') {
+            const brief = result.data;
+            const modal = document.getElementById('contentModal');
+            const modalTitle = document.getElementById('contentModalTitle');
+            const modalBody = document.getElementById('contentModalBody');
+
+            modalTitle.textContent = `Content Brief: ${brief.target_keyword}`;
+            modalBody.innerHTML = `
+                <div class="brief-preview">
+                    <div class="brief-header">
+                        <h3>${brief.target_keyword}</h3>
+                        <div class="brief-meta">
+                            <span>Priority: ${(brief.priority_score * 100).toFixed(0)}%</span>
+                            <span>Volume: ${brief.search_volume.toLocaleString()}</span>
+                            <span>Difficulty: ${brief.difficulty}/100</span>
+                            <span>Intent: ${brief.intent}</span>
+                        </div>
+                    </div>
+                    <div class="brief-content">
+                        <h4>Meta Description</h4>
+                        <p>${brief.meta_description}</p>
+                        
+                        <h4>Target Word Count</h4>
+                        <p>${brief.target_word_count} words</p>
+                        
+                        <h4>Content Structure</h4>
+                        <div class="headings-preview">
+                            <h5>H1: ${brief.headings.h1[0]}</h5>
+                            <h6>H2 Headings:</h6>
+                            <ul>
+                                ${brief.headings.h2.map(h2 => `<li>${h2}</li>`).join('')}
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            `;
+
+            modal.classList.add('active');
+        }
+    } catch (error) {
+        alert('Failed to load brief: ' + error.message);
+    }
+}
+
+async function downloadBrief(briefId) {
+    try {
+        const response = await fetch(`/api/seo/brief/${briefId}`);
+        const result = await response.json();
+        
+        if (result.status === 'success') {
+            const brief = result.data;
+            const blob = new Blob([brief.markdown_version], { type: 'text/markdown' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `content-brief-${brief.target_keyword.replace(/\s+/g, '-')}.md`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+        }
+    } catch (error) {
+        alert('Failed to download brief: ' + error.message);
+    }
+}

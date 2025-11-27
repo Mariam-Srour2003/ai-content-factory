@@ -65,6 +65,12 @@
                         </svg>
                         <span>Research</span>
                     </button>
+                    <button class="nav-item" onclick="switchTab('seo')" data-tab="seo">
+                        <svg class="nav-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"/>
+                        </svg>
+                        <span>SEO Strategy</span>
+                    </button>
                     <button class="nav-item" onclick="switchTab('settings')" data-tab="settings">
                         <svg class="nav-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
@@ -343,6 +349,111 @@
                     <div id="topicAnalysisResults" class="research-results"></div>
                 </div>
 
+                <!-- SEO Strategy Tab -->
+                <div id="seo-tab" class="tab-content">
+                    <div class="tab-header">
+                        <h2 class="tab-title">🚀 SEO Strategy Agent</h2>
+                        <div class="tab-actions">
+                            <button onclick="runQuickSEOAnalysis()" class="btn-primary">
+                                <svg class="btn-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/>
+                                </svg>
+                                Quick SEO Analysis
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- SEO Controls -->
+                    <div class="seo-controls">
+                        <div class="seo-tabs">
+                            <button class="seo-tab-btn active" onclick="showSEOSection('keywords')">Keyword Research</button>
+                            <button class="seo-tab-btn" onclick="showSEOSection('briefs')">Content Briefs</button>
+                            <button class="seo-tab-btn" onclick="showSEOSection('seo-insights')">SEO Insights</button>
+                        </div>
+
+                        <!-- Keyword Research Section -->
+                        <div id="keywords-section" class="seo-section active">
+                            <h3>🔍 Keyword Research</h3>
+                            <p class="seo-description">Discover high-opportunity keywords for your content strategy.</p>
+                            
+                            <div class="form-group">
+                                <label class="form-label">Seed Topics (comma-separated)</label>
+                                <input type="text" id="seedTopics" class="form-input" 
+                                    placeholder="skincare routine, anti-aging, acne treatment, moisturizer"
+                                    value="skincare routine, anti-aging, acne treatment">
+                                <small class="form-help">Enter topics to generate keyword variations from</small>
+                            </div>
+
+                            <div class="form-group">
+                                <label class="form-label">Max Keywords per Topic</label>
+                                <select id="maxKeywords" class="form-input">
+                                    <option value="10">10 keywords</option>
+                                    <option value="20" selected>20 keywords</option>
+                                    <option value="30">30 keywords</option>
+                                </select>
+                            </div>
+
+                            <button onclick="researchKeywords()" class="btn-primary btn-full">
+                                <svg class="btn-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+                                </svg>
+                                Research Keywords
+                            </button>
+                        </div>
+
+                        <!-- Content Briefs Section -->
+                        <div id="briefs-section" class="seo-section">
+                            <h3>📋 Content Brief Generator</h3>
+                            <p class="seo-description">Create detailed content briefs based on keyword research.</p>
+                            
+                            <div class="form-group">
+                                <label class="form-label">Top Keywords to Generate Briefs For</label>
+                                <select id="maxBriefs" class="form-input">
+                                    <option value="3">3 briefs</option>
+                                    <option value="5" selected>5 briefs</option>
+                                    <option value="10">10 briefs</option>
+                                </select>
+                                <small class="form-help">Requires keyword research data first</small>
+                            </div>
+
+                            <button onclick="generateContentBriefs()" class="btn-primary btn-full">
+                                <svg class="btn-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+                                </svg>
+                                Generate Content Briefs
+                            </button>
+                        </div>
+
+                        <!-- SEO Insights Section -->
+                        <div id="seo-insights-section" class="seo-section">
+                            <h3>💡 SEO Insights</h3>
+                            <p class="seo-description">View keyword research findings and content recommendations.</p>
+                            
+                            <div class="seo-actions">
+                                <button onclick="loadKeywordResearch()" class="btn-primary">
+                                    <svg class="btn-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/>
+                                    </svg>
+                                    Refresh Keywords
+                                </button>
+                                <button onclick="loadContentBriefs()" class="btn-secondary">
+                                    <svg class="btn-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+                                    </svg>
+                                    View Briefs
+                                </button>
+                            </div>
+
+                            <div id="seo-insights-content" class="seo-insights-content">
+                                <p class="seo-placeholder">Run keyword research first to see insights here.</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Results Area -->
+                    <div id="keywordResults" class="seo-results"></div>
+                    <div id="briefResults" class="seo-results"></div>
+                </div>
                 <!-- Settings Tab -->
                 <div id="settings-tab" class="tab-content">
                     <h2 class="tab-title">Settings</h2>

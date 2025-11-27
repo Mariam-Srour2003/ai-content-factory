@@ -10,7 +10,6 @@ import time
 from datetime import datetime
 from pathlib import Path
 from typing import Dict, List, Optional
-
 from fastapi import BackgroundTasks, FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import FileResponse, HTMLResponse
@@ -24,7 +23,7 @@ from ..core.metrics_logger import MetricsLogger
 from ..utils.logger import get_logger
 
 from src.ai_content_factory.agents.research_agent import AdvancedResearchAgent
-
+from src.ai_content_factory.agents.seo_agent import SEOStrategyAgent
 
 logger = get_logger(__name__)
 
@@ -769,3 +768,157 @@ async def test_research_agent():
         }
     except Exception as e:
         return {"status": "error", "message": str(e)}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+seo_agent = SEOStrategyAgent()
+
+class KeywordResearchRequest(BaseModel):
+    seed_topics: List[str]
+    max_keywords_per_topic: int = 20
+
+class BriefGenerationRequest(BaseModel):
+    max_briefs: int = 5
+
+@app.post("/api/seo/research-keywords")
+async def research_keywords(request: KeywordResearchRequest):
+    """Perform keyword research"""
+    try:
+        print(f"Received keyword research request: {request.seed_topics}")
+        
+        research_data = seo_agent.research_keywords(
+            request.seed_topics, 
+            request.max_keywords_per_topic
+        )
+        
+        # Save research data
+        research_file = "metrics_logs/seo_keyword_research.json"
+        with open(research_file, 'w', encoding='utf-8') as f:
+            json.dump(research_data, f, indent=2, ensure_ascii=False)
+            
+        return {
+            "status": "success",
+            "data": research_data,
+            "message": f"Keyword research completed: {research_data['total_keywords_generated']} keywords generated"
+        }
+    except Exception as e:
+        logger.error(f"Keyword research failed: {str(e)}")
+        return {"status": "error", "message": str(e)}
+
+@app.post("/api/seo/generate-briefs")
+async def generate_briefs(request: BriefGenerationRequest):
+    """Generate content briefs from keyword research"""
+    try:
+        print(f"Received brief generation request: {request.max_briefs} briefs")
+        
+        # Load existing keyword research
+        research_file = "metrics_logs/seo_keyword_research.json"
+        if not os.path.exists(research_file):
+            return {"status": "error", "message": "No keyword research data available. Run keyword research first."}
+            
+        with open(research_file, 'r', encoding='utf-8') as f:
+            keyword_data = json.load(f)
+            
+        briefs_data = seo_agent.generate_content_briefs(
+            keyword_data['keywords'], 
+            request.max_briefs
+        )
+        
+        # Save briefs data
+        briefs_file = "metrics_logs/seo_content_briefs.json"
+        with open(briefs_file, 'w', encoding='utf-8') as f:
+            json.dump(briefs_data, f, indent=2, ensure_ascii=False)
+            
+        return {
+            "status": "success",
+            "data": briefs_data,
+            "message": f"Content briefs generated: {briefs_data['total_briefs_generated']} briefs created"
+        }
+    except Exception as e:
+        logger.error(f"Brief generation failed: {str(e)}")
+        return {"status": "error", "message": str(e)}
+    
+
+
+    
+# SEO API Endpoints
+@app.post("/api/seo/research-keywords")
+async def research_keywords(seed_topics: List[str], max_keywords_per_topic: int = 20):
+    """Perform keyword research"""
+    try:
+        research_data = seo_agent.research_keywords(seed_topics, max_keywords_per_topic)
+        
+        # Save research data
+        research_file = "metrics_logs/seo_keyword_research.json"
+        with open(research_file, 'w', encoding='utf-8') as f:
+            json.dump(research_data, f, indent=2, ensure_ascii=False)
+            
+        return {
+            "status": "success",
+            "data": research_data,
+            "message": f"Keyword research completed: {research_data['total_keywords_generated']} keywords generated"
+        }
+    except Exception as e:
+        logger.error(f"Keyword research failed: {str(e)}")
+        return {"status": "error", "message": str(e)}
+
+
+
+@app.get("/api/seo/content-briefs")
+async def get_content_briefs():
+    """Get generated content briefs"""
+    try:
+        briefs_file = "metrics_logs/seo_content_briefs.json"
+        if os.path.exists(briefs_file):
+            with open(briefs_file, 'r', encoding='utf-8') as f:
+                briefs_data = json.load(f)
+            return {"status": "success", "data": briefs_data}
+        else:
+            return {"status": "error", "message": "No content briefs available"}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
+@app.get("/api/seo/brief/{brief_id}")
+async def get_brief(brief_id: str):
+    """Get specific content brief"""
+    try:
+        briefs_file = "metrics_logs/seo_content_briefs.json"
+        if os.path.exists(briefs_file):
+            with open(briefs_file, 'r', encoding='utf-8') as f:
+                briefs_data = json.load(f)
+                
+            brief = next((b for b in briefs_data['content_briefs'] if b['brief_id'] == brief_id), None)
+            if brief:
+                return {"status": "success", "data": brief}
+            else:
+                return {"status": "error", "message": "Brief not found"}
+        else:
+            return {"status": "error", "message": "No content briefs available"}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+    
