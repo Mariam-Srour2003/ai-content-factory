@@ -47,6 +47,10 @@ function switchTab(tabName) {
         loadAnalytics();
     } else if (tabName === 'settings') {
         loadSettings();
+    } else if (tabName === 'research') {
+        // Initialize research tab
+        showResearchSection('competitor');
+        loadResearchInsights(); // Load any existing insights
     }
 }
 
@@ -630,4 +634,485 @@ window.onclick = function(event) {
     if (event.target === contentModal) {
         closeContentModal();
     }
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+// ==================== Research Tab Functions ====================
+
+function showResearchSection(section) {
+    // Hide all sections
+    document.querySelectorAll('.research-section').forEach(sec => {
+        sec.classList.remove('active');
+    });
+    
+    // Remove active class from all buttons
+    document.querySelectorAll('.research-tab-btn').forEach(btn => {
+        btn.classList.remove('active');
+    });
+    
+    // Show selected section
+    document.getElementById(`${section}-section`).classList.add('active');
+    
+    // Activate corresponding button
+    const activeBtn = document.querySelector(`.research-tab-btn[onclick="showResearchSection('${section}')"]`);
+    if (activeBtn) {
+        activeBtn.classList.add('active');
+    }
+    
+    // Clear results when switching sections
+    document.getElementById('researchResults').innerHTML = '';
+    document.getElementById('topicAnalysisResults').innerHTML = '';
+}
+
+async function runQuickResearch() {
+    // Run both competitor and topic analysis with default settings
+    showResearchSection('competitor');
+    
+    const domains = ['https://techcrunch.com', 'https://www.theverge.com'];
+    const keywords = ['ai', 'technology', 'digital', 'innovation'];
+    
+    showLoading('researchResults', 'Running comprehensive research analysis...');
+    
+    try {
+        const response = await fetch('/api/research/analyze-competitors', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                competitor_domains: domains,
+                keywords: keywords
+            })
+        });
+        
+        const result = await response.json();
+        
+        if (result.status === 'success') {
+            displayResearchResults(result.data);
+        } else {
+            showError('researchResults', result.message);
+        }
+    } catch (error) {
+        showError('researchResults', 'Quick research failed: ' + error.message);
+    }
+}
+
+async function loadResearchInsights() {
+    showLoading('insights-content', 'Loading research insights...');
+    
+    try {
+        const response = await fetch('/api/research/insights');
+        const result = await response.json();
+        
+        if (result.status === 'success') {
+            displayResearchInsights(result.data);
+        } else {
+            showError('insights-content', result.message);
+        }
+    } catch (error) {
+        showError('insights-content', 'Failed to load insights: ' + error.message);
+    }
+}
+
+async function loadTopicRecommendations() {
+    showLoading('insights-content', 'Loading topic recommendations...');
+    
+    try {
+        const response = await fetch('/api/research/topic-recommendations');
+        const result = await response.json();
+        
+        if (result.status === 'success') {
+            displayTopicRecommendations(result.data);
+        } else {
+            showError('insights-content', result.message);
+        }
+    } catch (error) {
+        showError('insights-content', 'Failed to load recommendations: ' + error.message);
+    }
+}
+
+function displayResearchInsights(data) {
+    const container = document.getElementById('insights-content');
+    
+    if (!data || Object.keys(data).length === 0) {
+        container.innerHTML = '<p class="insights-placeholder">No research data available. Run research analysis first.</p>';
+        return;
+    }
+    
+    const webData = data.web_scraping_results || {};
+    const topicData = data.topic_analysis_results || {};
+    
+    container.innerHTML = `
+        <div style="width: 100%;">
+            <div class="research-section-card">
+                <h4>📈 Research Summary</h4>
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <h4>${webData.metadata?.total_posts_scraped || 0}</h4>
+                        <p>Posts Analyzed</p>
+                    </div>
+                    <div class="stat-card">
+                        <h4>${webData.metadata?.total_content_gaps || 0}</h4>
+                        <p>Content Gaps</p>
+                    </div>
+                    <div class="stat-card">
+                        <h4>${topicData.analysis_metadata?.high_priority_topics || 0}</h4>
+                        <p>High Priority</p>
+                    </div>
+                </div>
+            </div>
+            
+            ${webData.research_insights ? `
+            <div class="research-section-card">
+                <h4>🎯 Content Opportunities</h4>
+                <div class="opportunities-list">
+                    ${(webData.research_insights.content_opportunities || []).slice(0, 8).map(opp => `
+                        <div class="opportunity-item">
+                            <strong>${opp}</strong>
+                            <span>Opportunity</span>
+                        </div>
+                    `).join('')}
+                </div>
+            </div>
+            ` : ''}
+            
+            ${topicData.content_recommendations ? `
+            <div class="research-section-card">
+                <h4>💡 Recommended Content</h4>
+                <div class="recommendations">
+                    ${topicData.content_recommendations.slice(0, 3).map(rec => `
+                        <div class="recommendation">
+                            <h5>${rec.topic_title}</h5>
+                            <div class="rec-details">
+                                <span>Angle: ${rec.content_angle}</span>
+                                <span>Effort: ${rec.estimated_effort}</span>
+                            </div>
+                            <div class="keywords">
+                                ${rec.target_keywords.map(kw => `<span class="keyword-tag">${kw}</span>`).join('')}
+                            </div>
+                        </div>
+                    `).join('')}
+                </div>
+            </div>
+            ` : ''}
+        </div>
+    `;
+}
+
+function displayTopicRecommendations(data) {
+    const container = document.getElementById('insights-content');
+    
+    container.innerHTML = `
+        <div style="width: 100%;">
+            <div class="research-section-card">
+                <h4>🚀 Top Priority Topics</h4>
+                <div class="priority-topics">
+                    ${(data.top_priority_topics || []).slice(0, 5).map(topic => `
+                        <div class="priority-topic">
+                            <div class="topic-header">
+                                <strong>${topic.title}</strong>
+                                <span class="priority-badge ${topic.priority_tier}">${topic.priority_tier?.toUpperCase() || 'MEDIUM'}</span>
+                            </div>
+                            <div class="topic-metrics">
+                                <span>Score: ${topic.priority_score || 0}</span>
+                                <span>Relevance: ${((topic.relevance_score || 0) * 100).toFixed(0)}%</span>
+                            </div>
+                            <p class="topic-summary">${topic.summary || 'No summary available'}</p>
+                        </div>
+                    `).join('')}
+                </div>
+            </div>
+            
+            ${data.content_recommendations ? `
+            <div class="research-section-card">
+                <h4>📝 Content Recommendations</h4>
+                <div class="recommendations">
+                    ${data.content_recommendations.map(rec => `
+                        <div class="recommendation">
+                            <h5>${rec.topic_title}</h5>
+                            <div class="rec-details">
+                                <span>Angle: ${rec.content_angle}</span>
+                                <span>Effort: ${rec.estimated_effort}</span>
+                                <span>Score: ${rec.priority_score}</span>
+                            </div>
+                            <div class="keywords">
+                                ${rec.target_keywords.map(kw => `<span class="keyword-tag">${kw}</span>`).join('')}
+                            </div>
+                        </div>
+                    `).join('')}
+                </div>
+            </div>
+            ` : ''}
+        </div>
+    `;
+}
+
+// Helper functions for loading states
+function showLoading(containerId, message = 'Loading...') {
+    const container = document.getElementById(containerId);
+    container.innerHTML = `
+        <div class="research-loading">
+            <div class="spinner"></div>
+            <p>${message}</p>
+        </div>
+    `;
+}
+
+function showError(containerId, message) {
+    const container = document.getElementById(containerId);
+    container.innerHTML = `
+        <div class="research-error">
+            <p>${message}</p>
+        </div>
+    `;
+}
+
+
+
+async function analyzeCompetitors() {
+    const domains = document.getElementById('competitorDomains').value.split(',').map(d => d.trim());
+    const keywords = document.getElementById('researchKeywords').value.split(',').map(k => k.trim());
+    
+    showLoading('researchResults', 'Analyzing competitors...');
+    
+    try {
+        const response = await fetch('/api/research/analyze-competitors', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                competitor_domains: domains,
+                keywords: keywords
+            })
+        });
+        
+        const result = await response.json();
+        
+        if (result.status === 'success') {
+            displayResearchResults(result.data);
+        } else {
+            showError('researchResults', result.message);
+        }
+    } catch (error) {
+        showError('researchResults', 'Research analysis failed: ' + error.message);
+    }
+}
+
+async function analyzeTopics() {
+    const keywords = document.getElementById('topicKeywords').value.split(',').map(k => k.trim());
+    const maxTopics = parseInt(document.getElementById('maxTopics').value) || 25;
+    
+    showLoading('topicAnalysisResults', 'Analyzing topics...');
+    
+    try {
+        // Use JSON request body instead of query parameters
+        const requestData = {
+            domain_keywords: keywords,
+            max_topics: maxTopics
+        };
+        
+        const response = await fetch('/api/research/analyze-topics', {
+            method: 'POST',
+            headers: { 
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(requestData)
+        });
+        
+        const result = await response.json();
+        
+        if (result.status === 'success') {
+            displayTopicAnalysisResults(result.data);
+        } else {
+            showError('topicAnalysisResults', result.message);
+        }
+    } catch (error) {
+        showError('topicAnalysisResults', 'Topic analysis failed: ' + error.message);
+    }
+}
+function displayResearchResults(data) {
+    const container = document.getElementById('researchResults');
+    
+    // Add safety checks
+    if (!data) {
+        showError('researchResults', 'No data received from analysis');
+        return;
+    }
+    
+    const webData = data.web_scraping_results || {};
+    const topicData = data.topic_analysis_results || {};
+    const executionSummary = data.execution_summary || {};
+    
+    container.innerHTML = `
+        <div class="research-summary">
+            <h3>📊 Comprehensive Research Summary</h3>
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <h4>${executionSummary.total_competitor_posts || 0}</h4>
+                    <p>Competitor Posts</p>
+                </div>
+                <div class="stat-card">
+                    <h4>${executionSummary.total_trending_topics || 0}</h4>
+                    <p>Trending Topics</p>
+                </div>
+                <div class="stat-card">
+                    <h4>${executionSummary.content_gaps_identified || 0}</h4>
+                    <p>Content Gaps</p>
+                </div>
+                <div class="stat-card">
+                    <h4>${executionSummary.high_priority_topics || 0}</h4>
+                    <p>High Priority</p>
+                </div>
+            </div>
+        </div>
+        
+        ${webData.content_gaps ? `
+        <div class="research-section-card">
+            <h4>🎯 Top Content Opportunities</h4>
+            <div class="opportunities-list">
+                ${Object.keys(webData.content_gaps).slice(0, 10).map(gap => `
+                    <div class="opportunity-item">
+                        <strong>${gap}</strong>
+                        <span>Opportunity: ${(webData.content_gaps[gap]?.opportunity_score || 0).toFixed(2)}</span>
+                    </div>
+                `).join('')}
+            </div>
+        </div>
+        ` : ''}
+        
+        ${topicData.top_priority_topics ? `
+        <div class="research-section-card">
+            <h4>📈 Top Priority Topics</h4>
+            <div class="priority-topics">
+                ${topicData.top_priority_topics.slice(0, 5).map(topic => `
+                    <div class="priority-topic">
+                        <div class="topic-header">
+                            <strong>${topic.title || 'No title'}</strong>
+                            <span class="priority-badge ${topic.priority_tier || 'medium'}">${(topic.priority_tier || 'MEDIUM').toUpperCase()}</span>
+                        </div>
+                        <div class="topic-metrics">
+                            <span>Score: ${topic.priority_score || 0}</span>
+                            <span>Relevance: ${((topic.relevance_score || 0) * 100).toFixed(0)}%</span>
+                            <span>Sentiment: ${topic.sentiment || 'NEUTRAL'}</span>
+                        </div>
+                        <p class="topic-summary">${topic.summary || 'No summary available'}</p>
+                    </div>
+                `).join('')}
+            </div>
+        </div>
+        ` : ''}
+    `;
+}
+
+function displayTopicAnalysisResults(data) {
+    const container = document.getElementById('topicAnalysisResults');
+    
+    // Add safety checks
+    if (!data) {
+        showError('topicAnalysisResults', 'No data received from analysis');
+        return;
+    }
+    
+    // Check if we have the expected structure
+    const analyzedTopics = data.analyzed_topics || [];
+    const contentRecommendations = data.content_recommendations || [];
+    const topPriorityTopics = data.top_priority_topics || [];
+    const analysisMetadata = data.analysis_metadata || {};
+    
+    container.innerHTML = `
+        <div class="analysis-summary">
+            <h3>📊 Topic Analysis Summary</h3>
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <h4>${analysisMetadata.total_topics_analyzed || analyzedTopics.length}</h4>
+                    <p>Topics Analyzed</p>
+                </div>
+                <div class="stat-card">
+                    <h4>${analysisMetadata.clusters_identified || 0}</h4>
+                    <p>Topic Clusters</p>
+                </div>
+                <div class="stat-card">
+                    <h4>${analysisMetadata.high_priority_topics || topPriorityTopics.length}</h4>
+                    <p>High Priority</p>
+                </div>
+            </div>
+        </div>
+        
+        ${topPriorityTopics.length > 0 ? `
+        <div class="research-section-card">
+            <h4>🎯 Top Priority Topics</h4>
+            <div class="priority-topics">
+                ${topPriorityTopics.slice(0, 5).map(topic => `
+                    <div class="priority-topic">
+                        <div class="topic-header">
+                            <strong>${topic.title || 'No title'}</strong>
+                            <span class="priority-badge ${topic.priority_tier || 'medium'}">${(topic.priority_tier || 'MEDIUM').toUpperCase()}</span>
+                        </div>
+                        <div class="topic-metrics">
+                            <span>Score: ${topic.priority_score || 0}</span>
+                            <span>Relevance: ${((topic.relevance_score || 0) * 100).toFixed(0)}%</span>
+                            <span>Sentiment: ${topic.sentiment || 'NEUTRAL'}</span>
+                        </div>
+                        ${topic.summary ? `<p class="topic-summary">${topic.summary}</p>` : ''}
+                    </div>
+                `).join('')}
+            </div>
+        </div>
+        ` : '<div class="research-section-card"><p>No priority topics available</p></div>'}
+        
+        ${contentRecommendations.length > 0 ? `
+        <div class="research-section-card">
+            <h4>💡 Content Recommendations</h4>
+            <div class="recommendations">
+                ${contentRecommendations.map(rec => `
+                    <div class="recommendation">
+                        <h5>${rec.topic_title || 'Untitled'}</h5>
+                        <div class="rec-details">
+                            <span>Angle: ${rec.content_angle || 'General'}</span>
+                            <span>Effort: ${rec.estimated_effort || 'Medium'}</span>
+                            <span>Score: ${rec.priority_score || 0}</span>
+                        </div>
+                        ${rec.target_keywords && rec.target_keywords.length > 0 ? `
+                        <div class="keywords">
+                            ${rec.target_keywords.map(kw => `<span class="keyword-tag">${kw}</span>`).join('')}
+                        </div>
+                        ` : ''}
+                    </div>
+                `).join('')}
+            </div>
+        </div>
+        ` : '<div class="research-section-card"><p>No content recommendations available</p></div>'}
+        
+        ${analyzedTopics.length > 0 ? `
+        <div class="research-section-card">
+            <h4>📋 All Analyzed Topics</h4>
+            <div class="topics-list">
+                ${analyzedTopics.slice(0, 10).map(topic => `
+                    <div class="topic-item">
+                        <span class="topic-title">${topic.title || 'No title'}</span>
+                        <span class="topic-score">${topic.priority_score || 0}</span>
+                    </div>
+                `).join('')}
+            </div>
+        </div>
+        ` : ''}
+    `;
 }

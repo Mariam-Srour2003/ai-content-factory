@@ -1257,5 +1257,36 @@
       "keyword": "skin hydration water ",
       "word_count": 1000
     }
+  },
+  {
+    "content_quality_score": 83.54298801200348,
+    "brand_voice_similarity": 0.0,
+    "keyword_density": 2.4294156270518714,
+    "readability_score": 44.37819429185282,
+    "word_count_accuracy": 98.46666666666667,
+    "generation_time": 111.29733538627625,
+    "heading_structure_score": 1.0,
+    "seo_requirements_score": 1.0,
+    "details": {
+      "actual_word_count": 1523,
+      "target_word_count": 1500,
+      "keyword_occurrences": 37,
+      "heading_hierarchy_issues": [],
+      "seo_checklist": {
+        "keyword_in_title": true,
+        "keyword_in_meta": true,
+        "keyword_in_intro": true,
+        "keyword_in_conclusion": true,
+        "has_meta_description": true,
+        "meta_description_length_ok": true
+      }
+    },
+    "timestamp": "2025-11-27T09:49:43.971261",
+    "passes_requirements": false,
+    "metadata": {
+      "topic": "ai in marketing",
+      "keyword": "marketing",
+      "word_count": 1500
+    }
   }
 ]

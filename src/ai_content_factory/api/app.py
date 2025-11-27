@@ -5,6 +5,7 @@ Provides REST API endpoints for content generation, analytics, and management.
 
 import asyncio
 import json
+import os
 import time
 from datetime import datetime
 from pathlib import Path
@@ -21,6 +22,9 @@ from ..config.config_loader import load_config
 from ..core.metrics import ContentMetricsEvaluator
 from ..core.metrics_logger import MetricsLogger
 from ..utils.logger import get_logger
+
+from src.ai_content_factory.agents.research_agent import AdvancedResearchAgent
+
 
 logger = get_logger(__name__)
 
@@ -88,6 +92,76 @@ class SettingsUpdate(BaseModel):
     auto_publish: Optional[bool] = None
     generate_social: Optional[bool] = None
     require_fact_check: Optional[bool] = None
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+# ==================== Pydantic Models ====================
+
+class ContentGenerationRequest(BaseModel):
+    """Request model for content generation."""
+    topic: str = Field(..., min_length=3, max_length=200)
+    target_keyword: str = Field(..., min_length=2, max_length=100)
+    word_count: int = Field(default=1500, ge=500, le=5000)
+    content_type: str = Field(default="blog_post")
+    target_audience: str = Field(default="general readers")
+
+# ADD THIS NEW MODEL
+class TopicAnalysisRequest(BaseModel):
+    """Request model for topic analysis."""
+    domain_keywords: List[str] = None
+    max_topics: int = Field(default=25, ge=5, le=100)
+
+class ContentItem(BaseModel):
+    """Model for a content item in the library."""
+    id: str
+    title: str
+    status: str
+    leads: int
+    ranking: Optional[int]
+    date: str
+    topic: str
+    keyword: str
+    word_count: int
+    content: str
+    meta_description: str
+    metrics: Optional[Dict] = None
+
+class SettingsUpdate(BaseModel):
+    """Model for settings updates."""
+    llm_model: Optional[str] = None
+    temperature: Optional[float] = None
+    auto_publish: Optional[bool] = None
+    generate_social: Optional[bool] = None
+    require_fact_check: Optional[bool] = None
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 # ==================== Helper Functions ====================
@@ -529,3 +603,169 @@ if static_dir.exists():
 if __name__ == "__main__":
     import uvicorn
     uvicorn.run(app, host="0.0.0.0", port=8000, reload=True)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+class TopicAnalysisRequest(BaseModel):
+    """Request model for topic analysis."""
+    domain_keywords: List[str] = None
+    max_topics: int = Field(default=25, ge=5, le=100)
+
+@app.post("/api/research/analyze-competitors")
+async def analyze_competitors(competitor_domains: List[str] = None, keywords: List[str] = None):
+    """Analyze competitor content and identify gaps"""
+    try:
+        analyzer = AdvancedResearchAgent(domain_keywords=keywords or ['ai', 'technology', 'digital', 'innovation'])
+        research_data = analyzer.comprehensive_research_analysis(
+            competitor_domains=competitor_domains,
+            keywords_of_interest=keywords,
+            max_topics=25
+        )
+        
+        # Save research data
+        research_file = "metrics_logs/research_data.json"
+        with open(research_file, 'w', encoding='utf-8') as f:
+            json.dump(research_data, f, indent=2, ensure_ascii=False)
+            
+        return {
+            "status": "success",
+            "data": research_data,
+            "message": f"Research completed: {len(research_data['web_scraping_results']['scraped_posts'])} posts analyzed"
+        }
+    except Exception as e:
+        logger.error(f"Research analysis failed: {str(e)}")
+        return {"status": "error", "message": str(e)}
+
+@app.get("/api/research/insights")
+async def get_research_insights():
+    """Get latest research insights"""
+    try:
+        research_file = "metrics_logs/research_data.json"
+        if os.path.exists(research_file):
+            with open(research_file, 'r', encoding='utf-8') as f:
+                research_data = json.load(f)
+            return {"status": "success", "data": research_data}
+        else:
+            return {"status": "error", "message": "No research data available"}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
+@app.post("/api/research/analyze-topics")
+async def analyze_topics(
+    request: TopicAnalysisRequest = None,
+    domain_keywords: str = None,
+    max_topics: int = 25
+):
+    """Perform advanced topic analysis - supports both JSON body and query params"""
+    try:
+        # Handle both JSON body and query parameters
+        if request is None:
+            # Parse from query parameters
+            if domain_keywords:
+                if isinstance(domain_keywords, str):
+                    domain_keywords_list = [kw.strip() for kw in domain_keywords.split(',')]
+                else:
+                    domain_keywords_list = domain_keywords
+            else:
+                domain_keywords_list = ['skincare', 'beauty', 'routine', 'ingredients']
+            
+            request_data = {
+                "domain_keywords": domain_keywords_list,
+                "max_topics": max_topics
+            }
+        else:
+            # Use the request body
+            request_data = {
+                "domain_keywords": request.domain_keywords or ['skincare', 'beauty', 'routine', 'ingredients'],
+                "max_topics": request.max_topics or 25
+            }
+            
+        research_agent = AdvancedResearchAgent(domain_keywords=request_data['domain_keywords'])
+        analysis_result = research_agent.comprehensive_topic_analysis(max_topics=request_data['max_topics'])
+        
+        # Save analysis
+        analysis_file = "metrics_logs/topic_analysis.json"
+        with open(analysis_file, 'w', encoding='utf-8') as f:
+            json.dump(analysis_result, f, indent=2, ensure_ascii=False)
+            
+        return {
+            "status": "success",
+            "data": analysis_result,
+            "message": f"Topic analysis completed: {len(analysis_result['analyzed_topics'])} topics analyzed"
+        }
+    except Exception as e:
+        logger.error(f"Topic analysis failed: {str(e)}")
+        return {"status": "error", "message": str(e)}
+
+@app.get("/api/research/topic-recommendations")
+async def get_topic_recommendations():
+    """Get topic recommendations from latest analysis"""
+    try:
+        analysis_file = "metrics_logs/topic_analysis.json"
+        if os.path.exists(analysis_file):
+            with open(analysis_file, 'r', encoding='utf-8') as f:
+                analysis_data = json.load(f)
+            
+            recommendations = {
+                "top_priority_topics": analysis_data.get('top_priority_topics', [])[:5],
+                "content_recommendations": analysis_data.get('content_recommendations', []),
+                "clusters": analysis_data.get('cluster_analysis', {})
+            }
+            
+            return {"status": "success", "data": recommendations}
+        else:
+            return {"status": "error", "message": "No topic analysis available"}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
+@app.get("/api/test/research-agent")
+async def test_research_agent():
+    """Test endpoint for research agent functionality"""
+    try:
+        from src.ai_content_factory.agents.research_agent import AdvancedResearchAgent
+        
+        # Quick initialization test
+        agent = AdvancedResearchAgent()
+        
+        return {
+            "status": "success",
+            "message": "Research Agent initialized successfully",
+            "components": {
+                "web_scraper": hasattr(agent, 'scraper'),
+                "topic_analyzer": hasattr(agent, 'topic_analyzer'),
+                "gap_analyzer": hasattr(agent, 'gap_analyzer'),
+                "clusterer": hasattr(agent, 'clusterer'),
+                "ranker": hasattr(agent, 'ranker')
+            }
+        }
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
