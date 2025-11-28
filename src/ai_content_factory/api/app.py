@@ -862,30 +862,6 @@ async def generate_briefs(request: BriefGenerationRequest):
     except Exception as e:
         logger.error(f"Brief generation failed: {str(e)}")
         return {"status": "error", "message": str(e)}
-    
-
-
-    
-# SEO API Endpoints
-@app.post("/api/seo/research-keywords")
-async def research_keywords(seed_topics: List[str], max_keywords_per_topic: int = 20):
-    """Perform keyword research"""
-    try:
-        research_data = seo_agent.research_keywords(seed_topics, max_keywords_per_topic)
-        
-        # Save research data
-        research_file = "metrics_logs/seo_keyword_research.json"
-        with open(research_file, 'w', encoding='utf-8') as f:
-            json.dump(research_data, f, indent=2, ensure_ascii=False)
-            
-        return {
-            "status": "success",
-            "data": research_data,
-            "message": f"Keyword research completed: {research_data['total_keywords_generated']} keywords generated"
-        }
-    except Exception as e:
-        logger.error(f"Keyword research failed: {str(e)}")
-        return {"status": "error", "message": str(e)}
 
 
 
@@ -920,5 +896,341 @@ async def get_brief(brief_id: str):
         else:
             return {"status": "error", "message": "No content briefs available"}
     except Exception as e:
+        return {"status": "error", "message": str(e)}
+
+
+# Advanced Analytics & Insights Endpoints
+@app.get("/api/analytics/seo-insights")
+async def get_seo_insights():
+    """Get comprehensive SEO analytics and insights"""
+    try:
+        insights = {
+            "keyword_performance": {},
+            "search_trends": {},
+            "content_gaps": [],
+            "top_opportunities": [],
+            "intent_distribution": {},
+            "difficulty_distribution": {},
+            "topic_performance": []
+        }
+        
+        # Load keyword research data
+        keyword_file = "metrics_logs/seo_keyword_research.json"
+        if os.path.exists(keyword_file):
+            with open(keyword_file, 'r', encoding='utf-8') as f:
+                keyword_data = json.load(f)
+            
+            keywords = keyword_data.get('keywords', [])
+            
+            # Keyword performance metrics
+            if keywords:
+                insights['keyword_performance'] = {
+                    "total_keywords": len(keywords),
+                    "avg_search_volume": sum(k.get('search_volume', 0) for k in keywords) / len(keywords),
+                    "avg_difficulty": sum(k.get('difficulty', 0) for k in keywords) / len(keywords),
+                    "avg_priority_score": sum(k.get('priority_score', 0) for k in keywords) / len(keywords),
+                    "high_priority_count": len([k for k in keywords if k.get('priority_score', 0) > 0.8]),
+                    "low_competition_count": len([k for k in keywords if k.get('difficulty', 0) < 30])
+                }
+                
+                # Intent distribution
+                intent_counts = {}
+                for kw in keywords:
+                    intent = kw.get('intent', 'unknown')
+                    intent_counts[intent] = intent_counts.get(intent, 0) + 1
+                insights['intent_distribution'] = intent_counts
+                
+                # Difficulty distribution (buckets)
+                difficulty_buckets = {"easy": 0, "medium": 0, "hard": 0, "very_hard": 0}
+                for kw in keywords:
+                    diff = kw.get('difficulty', 0)
+                    if diff < 30:
+                        difficulty_buckets["easy"] += 1
+                    elif diff < 60:
+                        difficulty_buckets["medium"] += 1
+                    elif diff < 80:
+                        difficulty_buckets["hard"] += 1
+                    else:
+                        difficulty_buckets["very_hard"] += 1
+                insights['difficulty_distribution'] = difficulty_buckets
+                
+                # Top opportunities (high volume, low difficulty, high priority)
+                opportunities = sorted(
+                    [k for k in keywords if k.get('difficulty', 100) < 40 and k.get('search_volume', 0) > 50000],
+                    key=lambda x: x.get('priority_score', 0),
+                    reverse=True
+                )[:10]
+                insights['top_opportunities'] = opportunities
+                
+                # Search trends by seed topic
+                topic_trends = {}
+                for kw in keywords:
+                    seed = kw.get('seed_topic', 'unknown')
+                    if seed not in topic_trends:
+                        topic_trends[seed] = {
+                            "keyword_count": 0,
+                            "total_volume": 0,
+                            "avg_difficulty": 0,
+                            "top_keywords": []
+                        }
+                    topic_trends[seed]["keyword_count"] += 1
+                    topic_trends[seed]["total_volume"] += kw.get('search_volume', 0)
+                    topic_trends[seed]["avg_difficulty"] += kw.get('difficulty', 0)
+                    topic_trends[seed]["top_keywords"].append({
+                        "keyword": kw.get('keyword', ''),
+                        "volume": kw.get('search_volume', 0),
+                        "priority": kw.get('priority_score', 0)
+                    })
+                
+                # Average and sort
+                for topic in topic_trends:
+                    count = topic_trends[topic]["keyword_count"]
+                    topic_trends[topic]["avg_difficulty"] = topic_trends[topic]["avg_difficulty"] / count if count else 0
+                    topic_trends[topic]["top_keywords"] = sorted(
+                        topic_trends[topic]["top_keywords"],
+                        key=lambda x: x['priority'],
+                        reverse=True
+                    )[:5]
+                
+                insights['search_trends'] = topic_trends
+        
+        # Load research data for content gaps
+        research_file = "metrics_logs/research_data.json"
+        if os.path.exists(research_file):
+            with open(research_file, 'r', encoding='utf-8') as f:
+                research_data = json.load(f)
+            
+            web_data = research_data.get('web_scraping_results', {})
+            content_gaps = web_data.get('content_gaps', {})
+            
+            # Convert to list and sort by opportunity score
+            gap_list = [
+                {
+                    "topic": gap,
+                    "opportunity_score": data.get('opportunity_score', 0),
+                    "mentions": data.get('mention_count', 0)
+                }
+                for gap, data in content_gaps.items()
+            ]
+            insights['content_gaps'] = sorted(gap_list, key=lambda x: x['opportunity_score'], reverse=True)[:15]
+        
+        # Load topic analysis for performance
+        topic_file = "metrics_logs/topic_analysis.json"
+        if os.path.exists(topic_file):
+            with open(topic_file, 'r', encoding='utf-8') as f:
+                topic_data = json.load(f)
+            
+            top_topics = topic_data.get('top_priority_topics', [])
+            insights['topic_performance'] = [
+                {
+                    "title": t.get('title', ''),
+                    "priority_score": t.get('priority_score', 0),
+                    "relevance_score": t.get('relevance_score', 0),
+                    "sentiment": t.get('sentiment', 'NEUTRAL'),
+                    "priority_tier": t.get('priority_tier', 'medium')
+                }
+                for t in top_topics[:10]
+            ]
+        
+        return {"status": "success", "data": insights}
+    except Exception as e:
+        logger.error(f"SEO insights failed: {str(e)}")
+        return {"status": "error", "message": str(e)}
+
+
+@app.get("/api/analytics/content-effectiveness")
+async def get_content_effectiveness():
+    """Analyze content effectiveness based on keywords and metrics"""
+    try:
+        content_library = load_content_library()
+        metrics_file = Path("metrics_logs/metrics_history.json")
+        metrics_history = []
+        
+        if metrics_file.exists():
+            with open(metrics_file, 'r', encoding='utf-8') as f:
+                metrics_history = json.load(f)
+        
+        effectiveness = {
+            "content_by_keyword": {},
+            "performance_over_time": [],
+            "topic_success_rate": {},
+            "keyword_coverage": {
+                "targeted_keywords": 0,
+                "avg_density": 0,
+                "optimal_density_count": 0
+            }
+        }
+        
+        # Analyze content by topic/keyword
+        topic_metrics = {}
+        for content in content_library:
+            topic = content.get('topic', 'Unknown')
+            if topic not in topic_metrics:
+                topic_metrics[topic] = {
+                    "count": 0,
+                    "avg_quality": 0,
+                    "avg_readability": 0,
+                    "avg_seo_score": 0,
+                    "total_words": 0
+                }
+            
+            topic_metrics[topic]["count"] += 1
+            
+            # Find corresponding metrics
+            content_id = content.get('id')
+            metric = next((m for m in metrics_history if m.get('content_id') == content_id), None)
+            if metric:
+                topic_metrics[topic]["avg_quality"] += metric.get('content_quality_score', 0)
+                topic_metrics[topic]["avg_readability"] += metric.get('readability_score', 0)
+                topic_metrics[topic]["avg_seo_score"] += metric.get('seo_requirements_score', 0)
+            
+            # Word count
+            word_count = content.get('word_count', len(content.get('content', '').split()))
+            topic_metrics[topic]["total_words"] += word_count
+        
+        # Calculate averages
+        for topic in topic_metrics:
+            count = topic_metrics[topic]["count"]
+            if count > 0:
+                topic_metrics[topic]["avg_quality"] /= count
+                topic_metrics[topic]["avg_readability"] /= count
+                topic_metrics[topic]["avg_seo_score"] /= count
+                topic_metrics[topic]["avg_words"] = topic_metrics[topic]["total_words"] / count
+                
+                # Success rate (quality > 70 and SEO > 0.8)
+                topic_metrics[topic]["success_rate"] = (
+                    (topic_metrics[topic]["avg_quality"] > 70 and 
+                     topic_metrics[topic]["avg_seo_score"] > 0.8) * 100
+                )
+        
+        effectiveness["topic_success_rate"] = topic_metrics
+        
+        # Keyword coverage analysis
+        keyword_densities = [m.get('keyword_density', 0) for m in metrics_history if 'keyword_density' in m]
+        if keyword_densities:
+            effectiveness["keyword_coverage"]["targeted_keywords"] = len(keyword_densities)
+            effectiveness["keyword_coverage"]["avg_density"] = sum(keyword_densities) / len(keyword_densities)
+            effectiveness["keyword_coverage"]["optimal_density_count"] = len(
+                [d for d in keyword_densities if 1.0 <= d <= 2.5]
+            )
+        
+        # Performance over time (last 10 content pieces)
+        recent_metrics = sorted(metrics_history, key=lambda x: x.get('timestamp', ''), reverse=True)[:10]
+        effectiveness["performance_over_time"] = [
+            {
+                "content_id": m.get('content_id', ''),
+                "timestamp": m.get('timestamp', ''),
+                "quality_score": m.get('content_quality_score', 0),
+                "seo_score": m.get('seo_requirements_score', 0),
+                "readability": m.get('readability_score', 0),
+                "keyword_density": m.get('keyword_density', 0)
+            }
+            for m in recent_metrics
+        ]
+        
+        return {"status": "success", "data": effectiveness}
+    except Exception as e:
+        logger.error(f"Content effectiveness analysis failed: {str(e)}")
+        return {"status": "error", "message": str(e)}
+
+
+@app.get("/api/analytics/search-performance")
+async def get_search_performance():
+    """Get search performance metrics and rankings"""
+    try:
+        performance = {
+            "keyword_rankings": [],
+            "volume_trends": {},
+            "competition_analysis": {},
+            "recommendations": []
+        }
+        
+        # Load keyword research
+        keyword_file = "metrics_logs/seo_keyword_research.json"
+        if os.path.exists(keyword_file):
+            with open(keyword_file, 'r', encoding='utf-8') as f:
+                keyword_data = json.load(f)
+            
+            keywords = keyword_data.get('keywords', [])
+            
+            # Top ranking opportunities (high volume, low-medium difficulty)
+            ranking_opps = [
+                {
+                    "keyword": k.get('keyword', ''),
+                    "current_difficulty": k.get('difficulty', 0),
+                    "search_volume": k.get('search_volume', 0),
+                    "priority_score": k.get('priority_score', 0),
+                    "intent": k.get('intent', ''),
+                    "ranking_potential": "high" if k.get('difficulty', 0) < 40 else "medium" if k.get('difficulty', 0) < 70 else "low"
+                }
+                for k in keywords
+            ]
+            performance["keyword_rankings"] = sorted(
+                ranking_opps,
+                key=lambda x: (x['ranking_potential'] == 'high', x['search_volume']),
+                reverse=True
+            )[:20]
+            
+            # Volume trends by intent
+            volume_by_intent = {}
+            for kw in keywords:
+                intent = kw.get('intent', 'unknown')
+                if intent not in volume_by_intent:
+                    volume_by_intent[intent] = {
+                        "total_volume": 0,
+                        "keyword_count": 0,
+                        "avg_difficulty": 0
+                    }
+                volume_by_intent[intent]["total_volume"] += kw.get('search_volume', 0)
+                volume_by_intent[intent]["keyword_count"] += 1
+                volume_by_intent[intent]["avg_difficulty"] += kw.get('difficulty', 0)
+            
+            for intent in volume_by_intent:
+                count = volume_by_intent[intent]["keyword_count"]
+                volume_by_intent[intent]["avg_difficulty"] /= count if count else 1
+            
+            performance["volume_trends"] = volume_by_intent
+            
+            # Competition analysis
+            easy_keywords = [k for k in keywords if k.get('difficulty', 0) < 30]
+            medium_keywords = [k for k in keywords if 30 <= k.get('difficulty', 0) < 60]
+            hard_keywords = [k for k in keywords if k.get('difficulty', 0) >= 60]
+            
+            performance["competition_analysis"] = {
+                "easy_opportunities": len(easy_keywords),
+                "medium_competition": len(medium_keywords),
+                "high_competition": len(hard_keywords),
+                "avg_easy_volume": sum(k.get('search_volume', 0) for k in easy_keywords) / len(easy_keywords) if easy_keywords else 0,
+                "avg_medium_volume": sum(k.get('search_volume', 0) for k in medium_keywords) / len(medium_keywords) if medium_keywords else 0,
+                "avg_hard_volume": sum(k.get('search_volume', 0) for k in hard_keywords) / len(hard_keywords) if hard_keywords else 0
+            }
+            
+            # Generate recommendations
+            if easy_keywords:
+                performance["recommendations"].append({
+                    "type": "quick_win",
+                    "message": f"Focus on {len(easy_keywords)} low-competition keywords with avg volume of {performance['competition_analysis']['avg_easy_volume']:.0f}",
+                    "keywords": [k.get('keyword', '') for k in easy_keywords[:5]]
+                })
+            
+            high_value = [k for k in keywords if k.get('search_volume', 0) > 70000 and k.get('difficulty', 0) < 50]
+            if high_value:
+                performance["recommendations"].append({
+                    "type": "high_value",
+                    "message": f"Target {len(high_value)} high-volume, manageable-difficulty keywords",
+                    "keywords": [k.get('keyword', '') for k in high_value[:5]]
+                })
+            
+            # Intent-based recommendations
+            if "commercial" in volume_by_intent and volume_by_intent["commercial"]["keyword_count"] > 0:
+                performance["recommendations"].append({
+                    "type": "monetization",
+                    "message": f"Create comparison/review content for {volume_by_intent['commercial']['keyword_count']} commercial keywords",
+                    "keywords": [k.get('keyword', '') for k in keywords if k.get('intent') == 'commercial'][:5]
+                })
+        
+        return {"status": "success", "data": performance}
+    except Exception as e:
+        logger.error(f"Search performance analysis failed: {str(e)}")
         return {"status": "error", "message": str(e)}
     
