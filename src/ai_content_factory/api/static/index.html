@@ -101,11 +101,15 @@
                     <div class="charts-grid">
                         <div class="card">
                             <h3 class="card-title">Quality & Brand Voice Metrics</h3>
-                            <canvas id="performanceChart"></canvas>
+                            <div class="chart-container">
+                                <canvas id="performanceChart"></canvas>
+                            </div>
                         </div>
                         <div class="card">
                             <h3 class="card-title">Readability & Generation Time</h3>
-                            <canvas id="rankingChart"></canvas>
+                            <div class="chart-container">
+                                <canvas id="rankingChart"></canvas>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -201,37 +205,133 @@
 
                 <!-- Analytics Tab -->
                 <div id="analytics-tab" class="tab-content">
-                    <h2 class="tab-title">Analytics & Insights</h2>
-                    <div class="analytics-grid">
-                        <div class="card">
-                            <h3 class="card-subtitle">Top Performing Topics</h3>
-                            <div id="topTopics" class="metric-list">
-                                <!-- Topics will be loaded here -->
+                    <h2 class="tab-title">📊 Analytics & Insights</h2>
+                    
+                    <!-- Analytics Navigation -->
+                    <div class="analytics-nav">
+                        <button class="analytics-nav-btn active" onclick="showAnalyticsSection('overview')">Overview</button>
+                        <button class="analytics-nav-btn" onclick="showAnalyticsSection('seo-performance')">SEO Performance</button>
+                        <button class="analytics-nav-btn" onclick="showAnalyticsSection('content-effectiveness')">Content Effectiveness</button>
+                        <button class="analytics-nav-btn" onclick="showAnalyticsSection('search-insights')">Search Insights</button>
+                    </div>
+
+                    <!-- Overview Section -->
+                    <div id="overview-section" class="analytics-section active">
+                        <div class="analytics-grid">
+                            <div class="card">
+                                <h3 class="card-subtitle">Top Performing Topics</h3>
+                                <div id="topTopics" class="metric-list">
+                                    <!-- Topics will be loaded here -->
+                                </div>
+                            </div>
+
+                            <div class="card">
+                                <h3 class="card-subtitle">Content Status</h3>
+                                <div id="statusBreakdown" class="metric-list">
+                                    <!-- Status breakdown will be loaded here -->
+                                </div>
+                            </div>
+
+                            <div class="card">
+                                <h3 class="card-subtitle">Quality Metrics</h3>
+                                <div id="efficiencyMetrics" class="metric-list">
+                                    <!-- Metrics will be loaded here -->
+                                </div>
+                            </div>
+                        </div>
+
+                      
+                    </div>
+
+                    <!-- SEO Performance Section -->
+                    <div id="seo-performance-section" class="analytics-section">
+                        <div class="insights-grid">
+                            <div class="card">
+                                <h3 class="card-subtitle">🎯 Keyword Performance</h3>
+                                <div id="keywordPerformance" class="insights-content">
+                                    <div class="loading-placeholder">Loading...</div>
+                                </div>
+                            </div>
+
+                            <div class="card">
+                                <h3 class="card-subtitle">📈 Search Volume Trends</h3>
+                                <div id="volumeTrends" class="insights-content">
+                                    <div class="loading-placeholder">Loading...</div>
+                                </div>
+                            </div>
+
+                            <div class="card">
+                                <h3 class="card-subtitle">🎲 Difficulty Distribution</h3>
+                                <canvas id="difficultyChart"></canvas>
+                            </div>
+
+                            <div class="card">
+                                <h3 class="card-subtitle">🎯 Search Intent Breakdown</h3>
+                                <canvas id="intentChart"></canvas>
                             </div>
                         </div>
 
                         <div class="card">
-                            <h3 class="card-subtitle">Content Status</h3>
-                            <div id="statusBreakdown" class="metric-list">
-                                <!-- Status breakdown will be loaded here -->
+                            <h3 class="card-subtitle">🚀 Top Opportunities</h3>
+                            <div id="topOpportunities" class="opportunities-table">
+                                <div class="loading-placeholder">Loading...</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Content Effectiveness Section -->
+                    <div id="content-effectiveness-section" class="analytics-section">
+                        <div class="insights-grid">
+                            <div class="card">
+                                <h3 class="card-subtitle">📝 Topic Success Rate</h3>
+                                <div id="topicSuccess" class="insights-content">
+                                    <div class="loading-placeholder">Loading...</div>
+                                </div>
+                            </div>
+
+                            <div class="card">
+                                <h3 class="card-subtitle">🔑 Keyword Coverage</h3>
+                                <div id="keywordCoverage" class="insights-content">
+                                    <div class="loading-placeholder">Loading...</div>
+                                </div>
                             </div>
                         </div>
 
                         <div class="card">
-                            <h3 class="card-subtitle">Efficiency Metrics</h3>
-                            <div id="efficiencyMetrics" class="metric-list">
-                                <div class="metric-row">
-                                    <span>Avg. Time/Post</span>
-                                    <span class="metric-value">3.2 min</span>
+                            <h3 class="card-subtitle">📊 Performance Over Time</h3>
+                            <canvas id="performanceTimeChart"></canvas>
+                        </div>
+                    </div>
+
+                    <!-- Search Insights Section -->
+                    <div id="search-insights-section" class="analytics-section">
+                        <div class="card">
+                            <h3 class="card-subtitle">🏆 Top Ranking Opportunities</h3>
+                            <div id="rankingOpportunities" class="insights-content">
+                                <div class="loading-placeholder">Loading...</div>
+                            </div>
+                        </div>
+
+                        <div class="insights-grid">
+                            <div class="card">
+                                <h3 class="card-subtitle">⚔️ Competition Analysis</h3>
+                                <div id="competitionAnalysis" class="insights-content">
+                                    <div class="loading-placeholder">Loading...</div>
                                 </div>
-                                <div class="metric-row">
-                                    <span>Cost/Post</span>
-                                    <span class="metric-value">$12.50</span>
+                            </div>
+
+                            <div class="card">
+                                <h3 class="card-subtitle">💡 Recommendations</h3>
+                                <div id="searchRecommendations" class="insights-content">
+                                    <div class="loading-placeholder">Loading...</div>
                                 </div>
-                                <div class="metric-row">
-                                    <span>Quality Score</span>
-                                    <span class="metric-value">94%</span>
-                                </div>
+                            </div>
+                        </div>
+
+                        <div class="card">
+                            <h3 class="card-subtitle">🕵️ Content Gaps</h3>
+                            <div id="contentGapsAnalysis" class="insights-content">
+                                <div class="loading-placeholder">Loading...</div>
                             </div>
                         </div>
                     </div>
@@ -267,16 +367,16 @@
                             <div class="form-group">
                                 <label class="form-label">Competitor Domains (comma-separated)</label>
                                 <input type="text" id="competitorDomains" class="form-input" 
-                                    placeholder="https://techcrunch.com, https://www.theverge.com, https://www.wired.com"
-                                    value="https://techcrunch.com, https://www.theverge.com">
+                                    placeholder="https://www.paulaschoice.com, https://www.cerave.com, https://theordinary.com"
+                                    value="https://www.paulaschoice.com/expert-advice, https://www.cerave.com/skin-smarts, https://theordinary.com/en-us/blog">
                                 <small class="form-help">Enter blog URLs of competitors you want to analyze</small>
                             </div>
 
                             <div class="form-group">
                                 <label class="form-label">Keywords of Interest (comma-separated)</label>
                                 <input type="text" id="researchKeywords" class="form-input" 
-                                    placeholder="ai, technology, digital, innovation, software"
-                                    value="ai, technology, digital, innovation">
+                                    placeholder="skincare routine, anti-aging, acne treatment, moisturizer, serum"
+                                    value="skincare routine, anti-aging, acne treatment, moisturizer, serum, cleanser, SPF, retinol, hyaluronic acid, skin barrier">
                                 <small class="form-help">Keywords relevant to your business domain</small>
                             </div>
 

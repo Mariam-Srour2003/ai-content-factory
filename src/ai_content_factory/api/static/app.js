@@ -8,6 +8,8 @@ let currentTaskId = null;
 let pollInterval = null;
 let performanceChart = null;
 let rankingChart = null;
+let analyticsPerformanceChart = null;
+let analyticsRankingChart = null;
 
 // Initialize on page load
 document.addEventListener('DOMContentLoaded', () => {
@@ -119,42 +121,63 @@ async function loadDashboard() {
         `;
 
         // Update charts with real metrics data
-        updatePerformanceChart(data.performance_data);
-        updateMetricsChart(data.performance_data);
+        console.log('Dashboard data received:', data);
+        console.log('Performance data:', data.performance_data);
+        
+        if (data.performance_data && data.performance_data.length > 0) {
+            updatePerformanceChart(data.performance_data);
+            updateMetricsChart(data.performance_data);
+        } else {
+            console.warn('No performance data to display charts');
+        }
     } catch (error) {
         console.error('Error loading dashboard:', error);
     }
 }
 
 function updatePerformanceChart(data) {
+    console.log('updatePerformanceChart called with:', data);
+    
     const ctx = document.getElementById('performanceChart');
+    
+    if (!ctx) {
+        console.error('Performance chart canvas not found');
+        return;
+    }
+    
+    console.log('Canvas element found:', ctx);
     
     if (performanceChart) {
         performanceChart.destroy();
     }
 
     if (!data || data.length === 0) {
+        console.log('No performance data available');
         return;
     }
+
+    console.log('Creating performance chart with data:', data);
 
     performanceChart = new Chart(ctx, {
         type: 'line',
         data: {
-            labels: data.map(d => `#${d.index}`),
+            labels: data.map(d => `Content ${d.index}`),
             datasets: [
                 {
                     label: 'Quality Score',
                     data: data.map(d => d.quality_score),
                     borderColor: '#3b82f6',
                     backgroundColor: 'rgba(59, 130, 246, 0.1)',
-                    tension: 0.4
+                    tension: 0.4,
+                    fill: true
                 },
                 {
                     label: 'Brand Voice %',
                     data: data.map(d => d.brand_voice),
                     borderColor: '#a855f7',
                     backgroundColor: 'rgba(168, 85, 247, 0.1)',
-                    tension: 0.4
+                    tension: 0.4,
+                    fill: true
                 }
             ]
         },
@@ -164,12 +187,21 @@ function updatePerformanceChart(data) {
             plugins: {
                 legend: {
                     position: 'bottom'
+                },
+                tooltip: {
+                    mode: 'index',
+                    intersect: false
                 }
             },
             scales: {
                 y: {
                     beginAtZero: true,
-                    max: 100
+                    max: 100,
+                    ticks: {
+                        callback: function(value) {
+                            return value + '%';
+                        }
+                    }
                 }
             }
         }
@@ -177,30 +209,44 @@ function updatePerformanceChart(data) {
 }
 
 function updateMetricsChart(data) {
+    console.log('updateMetricsChart called with:', data);
+    
     const ctx = document.getElementById('rankingChart');
+    
+    if (!ctx) {
+        console.error('Ranking chart canvas not found');
+        return;
+    }
+    
+    console.log('Canvas element found:', ctx);
     
     if (rankingChart) {
         rankingChart.destroy();
     }
 
     if (!data || data.length === 0) {
+        console.log('No metrics data available');
         return;
     }
+
+    console.log('Creating ranking chart with data:', data);
 
     rankingChart = new Chart(ctx, {
         type: 'bar',
         data: {
-            labels: data.map(d => `#${d.index}`),
+            labels: data.map(d => `Content ${d.index}`),
             datasets: [
                 {
                     label: 'Readability Score',
                     data: data.map(d => d.readability),
-                    backgroundColor: '#22c55e'
+                    backgroundColor: '#22c55e',
+                    borderRadius: 4
                 },
                 {
                     label: 'Generation Time (s)',
                     data: data.map(d => d.generation_time),
-                    backgroundColor: '#f59e0b'
+                    backgroundColor: '#f59e0b',
+                    borderRadius: 4
                 }
             ]
         },
@@ -210,11 +256,20 @@ function updateMetricsChart(data) {
             plugins: {
                 legend: {
                     position: 'bottom'
+                },
+                tooltip: {
+                    mode: 'index',
+                    intersect: false
                 }
             },
             scales: {
                 y: {
-                    beginAtZero: true
+                    beginAtZero: true,
+                    ticks: {
+                        callback: function(value) {
+                            return value;
+                        }
+                    }
                 }
             }
         }
@@ -567,8 +622,597 @@ async function loadAnalytics() {
                 <span class="metric-value">${adv.pass_rate}%</span>
             </div>
         `;
+        
+        // Load charts for Overview section
+        if (data.performance_data && data.performance_data.length > 0) {
+            updatePerformanceChart(data.performance_data);
+            updateMetricsChart(data.performance_data);
+        }
+        
+        // Don't load heavy analytics sections on initial load
+        // They will be loaded when user clicks on their respective tabs
     } catch (error) {
         console.error('Error loading analytics:', error);
+    }
+}
+
+// Analytics Navigation
+function showAnalyticsSection(section) {
+    // Hide all sections
+    document.querySelectorAll('.analytics-section').forEach(sec => {
+        sec.classList.remove('active');
+    });
+    
+    // Remove active from all buttons
+    document.querySelectorAll('.analytics-nav-btn').forEach(btn => {
+        btn.classList.remove('active');
+    });
+    
+    // Show selected section
+    const sectionElement = document.getElementById(`${section}-section`);
+    if (sectionElement) {
+        sectionElement.classList.add('active');
+    }
+    
+    // Activate button
+    event.target.classList.add('active');
+    
+    // Lazy load data for the selected section
+    if (section === 'overview' && !window.overviewChartsLoaded) {
+        loadOverviewCharts();
+        window.overviewChartsLoaded = true;
+    } else if (section === 'seo-performance' && !window.seoPerformanceLoaded) {
+        loadSEOPerformance();
+        window.seoPerformanceLoaded = true;
+    } else if (section === 'content-effectiveness' && !window.contentEffectivenessLoaded) {
+        loadContentEffectiveness();
+        window.contentEffectivenessLoaded = true;
+    } else if (section === 'search-insights' && !window.searchInsightsLoaded) {
+        loadSearchInsights();
+        window.searchInsightsLoaded = true;
+    }
+}
+
+// Load Overview Charts for Analytics Tab
+async function loadOverviewCharts() {
+    try {
+        const response = await fetch(`${API_BASE}/api/analytics/dashboard`);
+        const data = await response.json();
+        
+        if (data.performance_data && data.performance_data.length > 0) {
+            updateAnalyticsPerformanceChart(data.performance_data);
+            updateAnalyticsRankingChart(data.performance_data);
+        }
+    } catch (error) {
+        console.error('Error loading overview charts:', error);
+    }
+}
+
+// Update Analytics Performance Chart (for Analytics tab)
+function updateAnalyticsPerformanceChart(data) {
+    const ctx = document.getElementById('analyticsPerformanceChart');
+    
+    if (!ctx) {
+        console.error('Analytics performance chart canvas not found');
+        return;
+    }
+    
+    if (analyticsPerformanceChart) {
+        analyticsPerformanceChart.destroy();
+    }
+
+    if (!data || data.length === 0) {
+        console.log('No performance data available');
+        return;
+    }
+
+    analyticsPerformanceChart = new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels: data.map(d => `Content ${d.index}`),
+            datasets: [
+                {
+                    label: 'Quality Score',
+                    data: data.map(d => d.quality_score),
+                    borderColor: '#3b82f6',
+                    backgroundColor: 'rgba(59, 130, 246, 0.1)',
+                    tension: 0.4,
+                    fill: true
+                },
+                {
+                    label: 'Brand Voice %',
+                    data: data.map(d => d.brand_voice),
+                    borderColor: '#a855f7',
+                    backgroundColor: 'rgba(168, 85, 247, 0.1)',
+                    tension: 0.4,
+                    fill: true
+                }
+            ]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    position: 'bottom'
+                },
+                tooltip: {
+                    mode: 'index',
+                    intersect: false
+                }
+            },
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    max: 100,
+                    ticks: {
+                        callback: function(value) {
+                            return value + '%';
+                        }
+                    }
+                }
+            }
+        }
+    });
+}
+
+// Update Analytics Ranking Chart (for Analytics tab)
+function updateAnalyticsRankingChart(data) {
+    const ctx = document.getElementById('analyticsRankingChart');
+    
+    if (!ctx) {
+        console.error('Analytics ranking chart canvas not found');
+        return;
+    }
+    
+    if (analyticsRankingChart) {
+        analyticsRankingChart.destroy();
+    }
+
+    if (!data || data.length === 0) {
+        console.log('No metrics data available');
+        return;
+    }
+
+    analyticsRankingChart = new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: data.map(d => `Content ${d.index}`),
+            datasets: [
+                {
+                    label: 'Readability Score',
+                    data: data.map(d => d.readability),
+                    backgroundColor: '#22c55e',
+                    borderRadius: 4
+                },
+                {
+                    label: 'Generation Time (s)',
+                    data: data.map(d => d.generation_time),
+                    backgroundColor: '#f59e0b',
+                    borderRadius: 4
+                }
+            ]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    position: 'bottom'
+                },
+                tooltip: {
+                    mode: 'index',
+                    intersect: false
+                }
+            },
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    ticks: {
+                        callback: function(value) {
+                            return value;
+                        }
+                    }
+                }
+            }
+        }
+    });
+}
+
+// Load SEO Performance Analytics
+async function loadSEOPerformance() {
+    try {
+        const response = await fetch(`${API_BASE}/api/analytics/seo-insights`);
+        const result = await response.json();
+        
+        if (result.status === 'success') {
+            const data = result.data;
+            
+            // Keyword Performance
+            const keywordPerf = document.getElementById('keywordPerformance');
+            const kp = data.keyword_performance;
+            keywordPerf.innerHTML = `
+                <div class="stats-grid">
+                    <div class="stat-item">
+                        <div class="stat-value">${kp.total_keywords || 0}</div>
+                        <div class="stat-label">Total Keywords</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-value">${(kp.avg_search_volume || 0).toLocaleString()}</div>
+                        <div class="stat-label">Avg Search Volume</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-value">${(kp.avg_difficulty || 0).toFixed(1)}</div>
+                        <div class="stat-label">Avg Difficulty</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-value">${kp.high_priority_count || 0}</div>
+                        <div class="stat-label">High Priority</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-value">${kp.low_competition_count || 0}</div>
+                        <div class="stat-label">Easy Targets</div>
+                    </div>
+                </div>
+            `;
+            
+            // Volume Trends
+            const volumeTrends = document.getElementById('volumeTrends');
+            const trends = data.search_trends || {};
+            volumeTrends.innerHTML = `
+                <div class="trends-list">
+                    ${Object.entries(trends).map(([topic, trend]) => `
+                        <div class="trend-item">
+                            <div class="trend-header">
+                                <strong>${topic}</strong>
+                                <span class="trend-count">${trend.keyword_count} keywords</span>
+                            </div>
+                            <div class="trend-stats">
+                                <span>Volume: ${trend.total_volume.toLocaleString()}</span>
+                                <span>Avg Difficulty: ${trend.avg_difficulty.toFixed(1)}</span>
+                            </div>
+                            <div class="trend-keywords">
+                                ${trend.top_keywords.slice(0, 3).map(kw => 
+                                    `<span class="keyword-pill">${kw.keyword}</span>`
+                                ).join('')}
+                            </div>
+                        </div>
+                    `).join('')}
+                </div>
+            `;
+            
+            // Difficulty Distribution Chart
+            const diffCtx = document.getElementById('difficultyChart');
+            if (diffCtx && data.difficulty_distribution) {
+                const dist = data.difficulty_distribution;
+                new Chart(diffCtx, {
+                    type: 'doughnut',
+                    data: {
+                        labels: ['Easy (<30)', 'Medium (30-60)', 'Hard (60-80)', 'Very Hard (80+)'],
+                        datasets: [{
+                            data: [dist.easy, dist.medium, dist.hard, dist.very_hard],
+                            backgroundColor: ['#10b981', '#f59e0b', '#ef4444', '#7f1d1d']
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: true,
+                        plugins: {
+                            legend: { position: 'bottom' }
+                        }
+                    }
+                });
+            }
+            
+            // Intent Distribution Chart
+            const intentCtx = document.getElementById('intentChart');
+            if (intentCtx && data.intent_distribution) {
+                const intents = data.intent_distribution;
+                new Chart(intentCtx, {
+                    type: 'bar',
+                    data: {
+                        labels: Object.keys(intents),
+                        datasets: [{
+                            label: 'Keywords by Intent',
+                            data: Object.values(intents),
+                            backgroundColor: ['#3b82f6', '#ec4899', '#f59e0b', '#10b981']
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: true,
+                        plugins: {
+                            legend: { display: false }
+                        },
+                        scales: {
+                            y: { beginAtZero: true }
+                        }
+                    }
+                });
+            }
+            
+            // Top Opportunities Table
+            const opportunities = document.getElementById('topOpportunities');
+            if (data.top_opportunities && data.top_opportunities.length > 0) {
+                opportunities.innerHTML = `
+                    <table class="content-table">
+                        <thead>
+                            <tr>
+                                <th>Keyword</th>
+                                <th>Volume</th>
+                                <th>Difficulty</th>
+                                <th>Intent</th>
+                                <th>Priority</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            ${data.top_opportunities.map(opp => `
+                                <tr>
+                                    <td><strong>${opp.keyword}</strong></td>
+                                    <td>${opp.search_volume.toLocaleString()}</td>
+                                    <td>
+                                        <div class="difficulty-bar">
+                                            <div class="difficulty-fill" style="width: ${opp.difficulty}%"></div>
+                                            <span>${opp.difficulty}</span>
+                                        </div>
+                                    </td>
+                                    <td><span class="intent-badge intent-${opp.intent}">${opp.intent}</span></td>
+                                    <td><strong>${(opp.priority_score * 100).toFixed(0)}%</strong></td>
+                                </tr>
+                            `).join('')}
+                        </tbody>
+                    </table>
+                `;
+            } else {
+                opportunities.innerHTML = '<p class="no-data">No opportunities data available. Run keyword research first.</p>';
+            }
+        }
+    } catch (error) {
+        console.error('Error loading SEO performance:', error);
+    }
+}
+
+// Load Content Effectiveness
+async function loadContentEffectiveness() {
+    try {
+        const response = await fetch(`${API_BASE}/api/analytics/content-effectiveness`);
+        const result = await response.json();
+        
+        if (result.status === 'success') {
+            const data = result.data;
+            
+            // Topic Success Rate
+            const topicSuccess = document.getElementById('topicSuccess');
+            const topics = data.topic_success_rate || {};
+            topicSuccess.innerHTML = `
+                <div class="success-list">
+                    ${Object.entries(topics).map(([topic, metrics]) => `
+                        <div class="success-item">
+                            <div class="success-header">
+                                <strong>${topic}</strong>
+                                <span class="success-badge ${metrics.success_rate > 0 ? 'success' : 'neutral'}">
+                                    ${metrics.success_rate > 0 ? '✓ Pass' : '○ Pending'}
+                                </span>
+                            </div>
+                            <div class="success-metrics">
+                                <div class="metric-mini">
+                                    <span class="metric-mini-label">Count</span>
+                                    <span class="metric-mini-value">${metrics.count}</span>
+                                </div>
+                                <div class="metric-mini">
+                                    <span class="metric-mini-label">Quality</span>
+                                    <span class="metric-mini-value">${metrics.avg_quality.toFixed(1)}</span>
+                                </div>
+                                <div class="metric-mini">
+                                    <span class="metric-mini-label">SEO</span>
+                                    <span class="metric-mini-value">${(metrics.avg_seo_score * 100).toFixed(0)}%</span>
+                                </div>
+                                <div class="metric-mini">
+                                    <span class="metric-mini-label">Words</span>
+                                    <span class="metric-mini-value">${Math.round(metrics.avg_words)}</span>
+                                </div>
+                            </div>
+                        </div>
+                    `).join('')}
+                </div>
+            `;
+            
+            // Keyword Coverage
+            const keywordCoverage = document.getElementById('keywordCoverage');
+            const coverage = data.keyword_coverage;
+            keywordCoverage.innerHTML = `
+                <div class="coverage-stats">
+                    <div class="coverage-item">
+                        <div class="coverage-value">${coverage.targeted_keywords}</div>
+                        <div class="coverage-label">Keywords Targeted</div>
+                    </div>
+                    <div class="coverage-item">
+                        <div class="coverage-value">${coverage.avg_density.toFixed(2)}%</div>
+                        <div class="coverage-label">Avg Density</div>
+                    </div>
+                    <div class="coverage-item">
+                        <div class="coverage-value">${coverage.optimal_density_count}</div>
+                        <div class="coverage-label">Optimal Density</div>
+                    </div>
+                </div>
+                <div class="coverage-note">
+                    <small>Optimal density range: 1.0% - 2.5%</small>
+                </div>
+            `;
+            
+            // Performance Over Time Chart
+            const perfTimeCtx = document.getElementById('performanceTimeChart');
+            if (perfTimeCtx && data.performance_over_time) {
+                const perfData = data.performance_over_time;
+                new Chart(perfTimeCtx, {
+                    type: 'line',
+                    data: {
+                        labels: perfData.map((_, i) => `Content ${i + 1}`),
+                        datasets: [
+                            {
+                                label: 'Quality Score',
+                                data: perfData.map(p => p.quality_score),
+                                borderColor: '#3b82f6',
+                                backgroundColor: 'rgba(59, 130, 246, 0.1)',
+                                fill: true
+                            },
+                            {
+                                label: 'SEO Score',
+                                data: perfData.map(p => p.seo_score * 100),
+                                borderColor: '#10b981',
+                                backgroundColor: 'rgba(16, 185, 129, 0.1)',
+                                fill: true
+                            },
+                            {
+                                label: 'Readability',
+                                data: perfData.map(p => p.readability),
+                                borderColor: '#f59e0b',
+                                backgroundColor: 'rgba(245, 158, 11, 0.1)',
+                                fill: true
+                            }
+                        ]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: true,
+                        interaction: {
+                            mode: 'index',
+                            intersect: false
+                        },
+                        scales: {
+                            y: {
+                                beginAtZero: true,
+                                max: 100
+                            }
+                        }
+                    }
+                });
+            }
+        }
+    } catch (error) {
+        console.error('Error loading content effectiveness:', error);
+    }
+}
+
+// Load Search Insights
+async function loadSearchInsights() {
+    try {
+        const response = await fetch(`${API_BASE}/api/analytics/search-performance`);
+        const result = await response.json();
+        
+        if (result.status === 'success') {
+            const data = result.data;
+            
+            // Ranking Opportunities
+            const rankingOpps = document.getElementById('rankingOpportunities');
+            if (data.keyword_rankings && data.keyword_rankings.length > 0) {
+                rankingOpps.innerHTML = `
+                    <table class="content-table">
+                        <thead>
+                            <tr>
+                                <th>Keyword</th>
+                                <th>Volume</th>
+                                <th>Difficulty</th>
+                                <th>Potential</th>
+                                <th>Intent</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            ${data.keyword_rankings.slice(0, 15).map(kw => `
+                                <tr>
+                                    <td><strong>${kw.keyword}</strong></td>
+                                    <td>${kw.search_volume.toLocaleString()}</td>
+                                    <td>${kw.current_difficulty}</td>
+                                    <td>
+                                        <span class="potential-badge potential-${kw.ranking_potential}">
+                                            ${kw.ranking_potential.toUpperCase()}
+                                        </span>
+                                    </td>
+                                    <td><span class="intent-badge intent-${kw.intent}">${kw.intent}</span></td>
+                                </tr>
+                            `).join('')}
+                        </tbody>
+                    </table>
+                `;
+            } else {
+                rankingOpps.innerHTML = '<p class="no-data">No ranking data available. Run keyword research first.</p>';
+            }
+            
+            // Competition Analysis
+            const competition = document.getElementById('competitionAnalysis');
+            const comp = data.competition_analysis;
+            if (comp) {
+                competition.innerHTML = `
+                    <div class="competition-grid">
+                        <div class="comp-item">
+                            <div class="comp-icon">🟢</div>
+                            <div class="comp-content">
+                                <div class="comp-count">${comp.easy_opportunities}</div>
+                                <div class="comp-label">Easy Keywords</div>
+                                <div class="comp-volume">Avg: ${comp.avg_easy_volume.toLocaleString()}</div>
+                            </div>
+                        </div>
+                        <div class="comp-item">
+                            <div class="comp-icon">🟡</div>
+                            <div class="comp-content">
+                                <div class="comp-count">${comp.medium_competition}</div>
+                                <div class="comp-label">Medium Competition</div>
+                                <div class="comp-volume">Avg: ${comp.avg_medium_volume.toLocaleString()}</div>
+                            </div>
+                        </div>
+                        <div class="comp-item">
+                            <div class="comp-icon">🔴</div>
+                            <div class="comp-content">
+                                <div class="comp-count">${comp.high_competition}</div>
+                                <div class="comp-label">High Competition</div>
+                                <div class="comp-volume">Avg: ${comp.avg_hard_volume.toLocaleString()}</div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }
+            
+            // Recommendations
+            const recommendations = document.getElementById('searchRecommendations');
+            if (data.recommendations && data.recommendations.length > 0) {
+                recommendations.innerHTML = `
+                    <div class="recommendations-list">
+                        ${data.recommendations.map(rec => `
+                            <div class="recommendation-card ${rec.type}">
+                                <div class="rec-type">${rec.type.replace('_', ' ').toUpperCase()}</div>
+                                <div class="rec-message">${rec.message}</div>
+                                <div class="rec-keywords">
+                                    ${rec.keywords.map(kw => `<span class="keyword-pill">${kw}</span>`).join('')}
+                                </div>
+                            </div>
+                        `).join('')}
+                    </div>
+                `;
+            }
+            
+            // Content Gaps
+            const response2 = await fetch(`${API_BASE}/api/analytics/seo-insights`);
+            const result2 = await response2.json();
+            if (result2.status === 'success' && result2.data.content_gaps) {
+                const contentGaps = document.getElementById('contentGapsAnalysis');
+                const gaps = result2.data.content_gaps;
+                contentGaps.innerHTML = `
+                    <div class="gaps-list">
+                        ${gaps.slice(0, 10).map(gap => `
+                            <div class="gap-item">
+                                <div class="gap-topic">${gap.topic}</div>
+                                <div class="gap-metrics">
+                                    <span class="gap-score">Score: ${gap.opportunity_score.toFixed(2)}</span>
+                                    <span class="gap-mentions">Mentions: ${gap.mentions}</span>
+                                </div>
+                            </div>
+                        `).join('')}
+                    </div>
+                `;
+            }
+        }
+    } catch (error) {
+        console.error('Error loading search insights:', error);
     }
 }
 

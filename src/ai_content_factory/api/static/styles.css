@@ -446,6 +446,23 @@ body {
     gap: 1.5rem;
 }
 
+/* Chart containers */
+.chart-container {
+    position: relative;
+    height: 350px;
+    margin-bottom: 2rem;
+    background: white;
+    padding: 1.5rem;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.chart-container canvas {
+    max-height: 320px;
+    width: 100% !important;
+    height: 100% !important;
+}
+
 .metric-list {
     display: flex;
     flex-direction: column;
@@ -1369,3 +1386,557 @@ body {
     padding: 0.25rem 0.5rem;
     border-radius: 0.25rem;
 }
+
+/* Enhanced Loading Spinner */
+.spinner {
+    border: 3px solid #f3f4f6;
+    border-top: 3px solid var(--blue-500);
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+/* Research & SEO Placeholders */
+.seo-placeholder,
+.insights-placeholder {
+    text-align: center;
+    padding: 3rem;
+    color: var(--slate-500);
+    font-style: italic;
+}
+
+/* Topics List */
+.topics-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.topic-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.75rem 1rem;
+    background: var(--slate-50);
+    border-radius: 0.375rem;
+    transition: background-color 0.2s;
+}
+
+.topic-item:hover {
+    background: var(--slate-100);
+}
+
+.topic-title {
+    color: var(--slate-900);
+    font-weight: 500;
+}
+
+.topic-score {
+    color: var(--blue-600);
+    font-weight: 600;
+    font-size: 0.875rem;
+}
+
+/* SEO Description */
+.seo-description {
+    color: var(--slate-600);
+    margin-bottom: 1.5rem;
+    line-height: 1.6;
+}
+
+/* SEO Actions */
+.seo-actions {
+    display: flex;
+    gap: 0.75rem;
+    margin-bottom: 1.5rem;
+}
+
+/* Enhanced Difficulty Bar Colors */
+.difficulty-fill {
+    background: linear-gradient(90deg, #10b981 0%, #f59e0b 50%, #ef4444 100%);
+    background-size: 100% 100%;
+}
+
+/* Stats Grid Enhancement */
+.seo-summary {
+    margin-bottom: 2rem;
+}
+
+.seo-summary h3,
+.analysis-summary h3,
+.research-summary h3 {
+    margin-bottom: 1rem;
+    color: var(--slate-900);
+    font-size: 1.25rem;
+}
+
+/* Research/SEO Results Container */
+.seo-results {
+    margin-top: 1.5rem;
+}
+
+/* Responsive improvements for Research & SEO */
+@media (max-width: 768px) {
+    .research-controls,
+    .seo-controls {
+        padding: 1rem;
+    }
+    
+    .research-tabs,
+    .seo-tabs {
+        flex-direction: column;
+    }
+    
+    .research-tab-btn,
+    .seo-tab-btn {
+        width: 100%;
+    }
+    
+    .clusters-grid,
+    .briefs-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .keywords-table {
+        overflow-x: auto;
+    }
+    
+    .brief-metrics {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* ========== Analytics Enhancements ========== */
+
+/* Analytics Navigation */
+.analytics-nav {
+    display: flex;
+    gap: 0.5rem;
+    margin-bottom: 2rem;
+    border-bottom: 2px solid var(--slate-200);
+    padding-bottom: 0;
+}
+
+.analytics-nav-btn {
+    background: none;
+    border: none;
+    padding: 1rem 1.5rem;
+    color: var(--slate-600);
+    font-weight: 500;
+    cursor: pointer;
+    border-bottom: 2px solid transparent;
+    margin-bottom: -2px;
+    transition: all 0.2s;
+}
+
+.analytics-nav-btn:hover {
+    color: var(--blue-600);
+    background: var(--slate-50);
+}
+
+.analytics-nav-btn.active {
+    color: var(--blue-600);
+    border-bottom-color: var(--blue-600);
+}
+
+/* Analytics Sections */
+.analytics-section {
+    display: none;
+}
+
+.analytics-section.active {
+    display: block;
+}
+
+/* Insights Grid */
+.insights-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 1.5rem;
+    margin-bottom: 2rem;
+}
+
+.insights-content {
+    min-height: 200px;
+}
+
+.loading-placeholder {
+    text-align: center;
+    padding: 3rem;
+    color: var(--slate-400);
+    font-style: italic;
+}
+
+/* Stats Grid */
+.stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+    gap: 1rem;
+}
+
+.stat-item {
+    text-align: center;
+    padding: 1rem;
+    background: var(--slate-50);
+    border-radius: 0.5rem;
+}
+
+.stat-value {
+    font-size: 1.75rem;
+    font-weight: bold;
+    color: var(--blue-600);
+    margin-bottom: 0.25rem;
+}
+
+.stat-label {
+    font-size: 0.875rem;
+    color: var(--slate-600);
+}
+
+/* Trends List */
+.trends-list {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.trend-item {
+    padding: 1rem;
+    background: var(--slate-50);
+    border-radius: 0.5rem;
+    border-left: 4px solid var(--blue-500);
+}
+
+.trend-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 0.5rem;
+}
+
+.trend-count {
+    font-size: 0.875rem;
+    color: var(--slate-600);
+    background: white;
+    padding: 0.25rem 0.5rem;
+    border-radius: 0.25rem;
+}
+
+.trend-stats {
+    display: flex;
+    gap: 1rem;
+    font-size: 0.875rem;
+    color: var(--slate-600);
+    margin-bottom: 0.5rem;
+}
+
+.trend-keywords {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+}
+
+.keyword-pill {
+    background: var(--blue-100);
+    color: var(--blue-800);
+    padding: 0.25rem 0.75rem;
+    border-radius: 1rem;
+    font-size: 0.75rem;
+    font-weight: 500;
+}
+
+/* Opportunities Table */
+.opportunities-table {
+    overflow-x: auto;
+}
+
+.no-data {
+    text-align: center;
+    padding: 2rem;
+    color: var(--slate-500);
+    font-style: italic;
+}
+
+/* Success List */
+.success-list {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.success-item {
+    padding: 1rem;
+    background: var(--slate-50);
+    border-radius: 0.5rem;
+}
+
+.success-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 0.75rem;
+}
+
+.success-badge {
+    padding: 0.25rem 0.75rem;
+    border-radius: 1rem;
+    font-size: 0.75rem;
+    font-weight: 600;
+}
+
+.success-badge.success {
+    background: var(--green-100);
+    color: var(--green-800);
+}
+
+.success-badge.neutral {
+    background: var(--slate-200);
+    color: var(--slate-600);
+}
+
+.success-metrics {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 0.75rem;
+}
+
+.metric-mini {
+    text-align: center;
+}
+
+.metric-mini-label {
+    display: block;
+    font-size: 0.75rem;
+    color: var(--slate-600);
+    margin-bottom: 0.25rem;
+}
+
+.metric-mini-value {
+    display: block;
+    font-weight: 600;
+    color: var(--slate-900);
+}
+
+/* Coverage Stats */
+.coverage-stats {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1.5rem;
+    margin-bottom: 1rem;
+}
+
+.coverage-item {
+    text-align: center;
+    padding: 1.5rem;
+    background: var(--slate-50);
+    border-radius: 0.5rem;
+}
+
+.coverage-value {
+    font-size: 2rem;
+    font-weight: bold;
+    color: var(--blue-600);
+    margin-bottom: 0.5rem;
+}
+
+.coverage-label {
+    font-size: 0.875rem;
+    color: var(--slate-600);
+}
+
+.coverage-note {
+    text-align: center;
+    color: var(--slate-500);
+    font-style: italic;
+}
+
+/* Potential Badge */
+.potential-badge {
+    padding: 0.25rem 0.75rem;
+    border-radius: 1rem;
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+}
+
+.potential-high {
+    background: var(--green-100);
+    color: var(--green-800);
+}
+
+.potential-medium {
+    background: var(--yellow-100);
+    color: var(--yellow-800);
+}
+
+.potential-low {
+    background: var(--slate-200);
+    color: var(--slate-600);
+}
+
+/* Competition Grid */
+.competition-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1.5rem;
+}
+
+.comp-item {
+    text-align: center;
+    padding: 1.5rem;
+    background: var(--slate-50);
+    border-radius: 0.5rem;
+}
+
+.comp-icon {
+    font-size: 2rem;
+    margin-bottom: 0.5rem;
+}
+
+.comp-count {
+    font-size: 2rem;
+    font-weight: bold;
+    color: var(--slate-900);
+    margin-bottom: 0.25rem;
+}
+
+.comp-label {
+    font-size: 0.875rem;
+    color: var(--slate-600);
+    margin-bottom: 0.5rem;
+}
+
+.comp-volume {
+    font-size: 0.75rem;
+    color: var(--slate-500);
+}
+
+/* Recommendations List */
+.recommendations-list {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.recommendation-card {
+    padding: 1.25rem;
+    border-radius: 0.5rem;
+    border-left: 4px solid var(--blue-500);
+}
+
+.recommendation-card.quick_win {
+    background: #f0fdf4;
+    border-left-color: var(--green-500);
+}
+
+.recommendation-card.high_value {
+    background: #fef3c7;
+    border-left-color: var(--yellow-500);
+}
+
+.recommendation-card.monetization {
+    background: #fce7f3;
+    border-left-color: var(--purple-500);
+}
+
+.rec-type {
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: var(--slate-600);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-bottom: 0.5rem;
+}
+
+.rec-message {
+    font-weight: 500;
+    color: var(--slate-900);
+    margin-bottom: 0.75rem;
+}
+
+.rec-keywords {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+}
+
+/* Gaps List */
+.gaps-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+
+.gap-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem;
+    background: var(--slate-50);
+    border-radius: 0.5rem;
+    border-left: 4px solid var(--orange-500);
+}
+
+.gap-topic {
+    font-weight: 500;
+    color: var(--slate-900);
+    flex: 1;
+}
+
+.gap-metrics {
+    display: flex;
+    gap: 1rem;
+    font-size: 0.875rem;
+    color: var(--slate-600);
+}
+
+/* Analytics Charts Container */
+.analytics-charts {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+    gap: 1.5rem;
+    margin-top: 2rem;
+}
+
+/* Responsive Analytics */
+@media (max-width: 968px) {
+    .analytics-nav {
+        flex-wrap: wrap;
+    }
+    
+    .analytics-nav-btn {
+        flex: 1 1 auto;
+        min-width: 150px;
+    }
+    
+    .insights-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .stats-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+    
+    .competition-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .coverage-stats {
+        grid-template-columns: 1fr;
+    }
+    
+    .success-metrics {
+        grid-template-columns: repeat(2, 1fr);
+    }
+    
+    .analytics-charts {
+        grid-template-columns: 1fr;
+    }
+}
+
