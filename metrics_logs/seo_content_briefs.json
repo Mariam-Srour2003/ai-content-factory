@@ -1,21 +1,73 @@
 {
   "content_briefs": [
     {
-      "target_keyword": "acne treatment review",
-      "priority_score": 0.81462725759041,
-      "search_volume": 86825,
+      "target_keyword": "anti-aging how",
+      "priority_score": 0.8691830865724182,
+      "search_volume": 99349,
       "difficulty": 10,
-      "intent": "commercial",
-      "target_word_count": 1598,
-      "meta_description": "Compare the best acne treatment review options available. Read our expert reviews and find the perfect solution for your needs.",
+      "intent": "informational",
+      "target_word_count": 1986,
+      "meta_description": "Learn everything about anti-aging how with our comprehensive guide. Discover best practices, tips, and step-by-step instructions.",
       "headings": {
         "h1": [
-          "The Ultimate Guide to Acne Treatment Review"
+          "The Ultimate Guide to Anti-Aging How"
         ],
         "h2": [
-          "What is acne?",
-          "Benefits of acne treatment review",
-          "How to Use acne",
+          "What is anti-aging?",
+          "Benefits of anti-aging how",
+          "How to Use anti-aging",
+          "Key Features and Specifications",
+          "Step-by-Step Implementation Guide",
+          "Common Challenges and Solutions",
+          "Best Practices and Tips",
+          "Frequently Asked Questions"
+        ],
+        "h3": [
+          "Getting Started",
+          "Advanced Techniques",
+          "Performance Optimization",
+          "Troubleshooting Common Issues"
+        ]
+      },
+      "internal_links": [
+        {
+          "anchor_text": "learn more about anti-aging",
+          "target_topic": "anti-aging",
+          "relevance_score": 0.6575043834398158
+        }
+      ],
+      "serp_analysis": {
+        "avg_word_count": 2482.5,
+        "common_content_types": {
+          "guide": 5,
+          "product page": 2,
+          "video": 3
+        },
+        "video_percentage": 0.3,
+        "avg_images": 8.8,
+        "readability_avg": 58.60864792331199
+      },
+      "content_depth": "Standard",
+      "generated_date": "2025-11-27T14:29:21.088783",
+      "brief_id": "brief_001",
+      "markdown_version": "# Content Brief: anti-aging how\n\n## 📊 SEO Metrics\n- **Priority Score**: 0.87\n- **Search Volume**: 99349\n- **Difficulty**: 10/100\n- **Search Intent**: informational\n\n## 🎯 Target Word Count\n**1986 words**\n\n## 📝 Meta Description\nLearn everything about anti-aging how with our comprehensive guide. Discover best practices, tips, and step-by-step instructions.\n\n## 🏗️ Content Structure\n\n### H1 Heading\nThe Ultimate Guide to Anti-Aging How\n\n### H2 Headings\n- What is anti-aging?\n- Benefits of anti-aging how\n- How to Use anti-aging\n- Key Features and Specifications\n- Step-by-Step Implementation Guide\n- Common Challenges and Solutions\n- Best Practices and Tips\n- Frequently Asked Questions\n\n### H3 Headings\n- Getting Started\n- Advanced Techniques\n- Performance Optimization\n- Troubleshooting Common Issues\n\n## 🔗 Internal Linking Opportunities\n- **learn more about anti-aging** -> anti-aging (Relevance: 0.66)\n\n## 📈 SERP Analysis Insights\n- **Average Competitor Word Count**: 2482\n- **Recommended Content Depth**: Standard\n- **Readability Target**: 58.6\n\n## 💡 Key Recommendations\n1. Focus on informational intent throughout the content\n2. Include visual elements: target 8.8 images\n3. Optimize for readability score ~58.6\n4. Cover all key aspects identified in competitor analysis\n\n---\n*Generated on 2025-11-27T14:29:21.088783*\n"
+    },
+    {
+      "target_keyword": "skincare routine review",
+      "priority_score": 0.8677627344003078,
+      "search_volume": 93167,
+      "difficulty": 10,
+      "intent": "commercial",
+      "target_word_count": 1744,
+      "meta_description": "Compare the best skincare routine review options available. Read our expert reviews and find the perfect solution for your needs.",
+      "headings": {
+        "h1": [
+          "The Ultimate Guide to Skincare Routine Review"
+        ],
+        "h2": [
+          "What is skincare?",
+          "Benefits of skincare routine review",
+          "How to Use skincare",
           "Key Features and Specifications",
           "Step-by-Step Implementation Guide",
           "Common Challenges and Solutions",
@@ -33,43 +85,103 @@
         {
           "anchor_text": "learn more about review",
           "target_topic": "review",
-          "relevance_score": 0.8814241056870711
+          "relevance_score": 0.8285560094765345
         },
         {
-          "anchor_text": "learn more about treatment",
-          "target_topic": "treatment",
-          "relevance_score": 0.8727014156027559
+          "anchor_text": "learn more about routine",
+          "target_topic": "routine",
+          "relevance_score": 0.802757094094653
         },
         {
-          "anchor_text": "learn more about acne",
-          "target_topic": "acne",
-          "relevance_score": 0.8687722418830961
+          "anchor_text": "learn more about skincare",
+          "target_topic": "skincare",
+          "relevance_score": 0.6047518972826027
         }
       ],
       "serp_analysis": {
-        "avg_word_count": 1998.4,
+        "avg_word_count": 2180.5,
         "common_content_types": {
-          "blog post": 3,
-          "product page": 2,
+          "blog post": 4,
+          "news article": 2,
           "guide": 2,
-          "news article": 3
+          "product page": 1,
+          "video": 1
         },
         "video_percentage": 0.5,
-        "avg_images": 8.8,
-        "readability_avg": 64.18803522339842
+        "avg_images": 8.6,
+        "readability_avg": 62.6917083405213
       },
       "content_depth": "Standard",
-      "generated_date": "2025-11-27T11:52:55.606816",
-      "brief_id": "brief_001",
-      "markdown_version": "# Content Brief: acne treatment review\n\n## 📊 SEO Metrics\n- **Priority Score**: 0.81\n- **Search Volume**: 86825\n- **Difficulty**: 10/100\n- **Search Intent**: commercial\n\n## 🎯 Target Word Count\n**1598 words**\n\n## 📝 Meta Description\nCompare the best acne treatment review options available. Read our expert reviews and find the perfect solution for your needs.\n\n## 🏗️ Content Structure\n\n### H1 Heading\nThe Ultimate Guide to Acne Treatment Review\n\n### H2 Headings\n- What is acne?\n- Benefits of acne treatment review\n- How to Use acne\n- Key Features and Specifications\n- Step-by-Step Implementation Guide\n- Common Challenges and Solutions\n- Best Practices and Tips\n- Frequently Asked Questions\n\n### H3 Headings\n- Getting Started\n- Advanced Techniques\n- Performance Optimization\n- Troubleshooting Common Issues\n\n## 🔗 Internal Linking Opportunities\n- **learn more about review** -> review (Relevance: 0.88)\n- **learn more about treatment** -> treatment (Relevance: 0.87)\n- **learn more about acne** -> acne (Relevance: 0.87)\n\n## 📈 SERP Analysis Insights\n- **Average Competitor Word Count**: 1998\n- **Recommended Content Depth**: Standard\n- **Readability Target**: 64.2\n\n## 💡 Key Recommendations\n1. Focus on commercial intent throughout the content\n2. Include visual elements: target 8.8 images\n3. Optimize for readability score ~64.2\n4. Cover all key aspects identified in competitor analysis\n\n---\n*Generated on 2025-11-27T11:52:55.606816*\n"
+      "generated_date": "2025-11-27T14:29:21.088783",
+      "brief_id": "brief_002",
+      "markdown_version": "# Content Brief: skincare routine review\n\n## 📊 SEO Metrics\n- **Priority Score**: 0.87\n- **Search Volume**: 93167\n- **Difficulty**: 10/100\n- **Search Intent**: commercial\n\n## 🎯 Target Word Count\n**1744 words**\n\n## 📝 Meta Description\nCompare the best skincare routine review options available. Read our expert reviews and find the perfect solution for your needs.\n\n## 🏗️ Content Structure\n\n### H1 Heading\nThe Ultimate Guide to Skincare Routine Review\n\n### H2 Headings\n- What is skincare?\n- Benefits of skincare routine review\n- How to Use skincare\n- Key Features and Specifications\n- Step-by-Step Implementation Guide\n- Common Challenges and Solutions\n- Best Practices and Tips\n- Frequently Asked Questions\n\n### H3 Headings\n- Getting Started\n- Advanced Techniques\n- Performance Optimization\n- Troubleshooting Common Issues\n\n## 🔗 Internal Linking Opportunities\n- **learn more about review** -> review (Relevance: 0.83)\n- **learn more about routine** -> routine (Relevance: 0.80)\n- **learn more about skincare** -> skincare (Relevance: 0.60)\n\n## 📈 SERP Analysis Insights\n- **Average Competitor Word Count**: 2180\n- **Recommended Content Depth**: Standard\n- **Readability Target**: 62.7\n\n## 💡 Key Recommendations\n1. Focus on commercial intent throughout the content\n2. Include visual elements: target 8.6 images\n3. Optimize for readability score ~62.7\n4. Cover all key aspects identified in competitor analysis\n\n---\n*Generated on 2025-11-27T14:29:21.088783*\n"
+    },
+    {
+      "target_keyword": "anti-aging what",
+      "priority_score": 0.8597739779431062,
+      "search_volume": 95884,
+      "difficulty": 10,
+      "intent": "informational",
+      "target_word_count": 2001,
+      "meta_description": "Learn everything about anti-aging what with our comprehensive guide. Discover best practices, tips, and step-by-step instructions.",
+      "headings": {
+        "h1": [
+          "The Ultimate Guide to Anti-Aging What"
+        ],
+        "h2": [
+          "What is anti-aging?",
+          "Benefits of anti-aging what",
+          "How to Use anti-aging",
+          "Key Features and Specifications",
+          "Step-by-Step Implementation Guide",
+          "Common Challenges and Solutions",
+          "Best Practices and Tips",
+          "Frequently Asked Questions"
+        ],
+        "h3": [
+          "Getting Started",
+          "Advanced Techniques",
+          "Performance Optimization",
+          "Troubleshooting Common Issues"
+        ]
+      },
+      "internal_links": [
+        {
+          "anchor_text": "learn more about anti-aging",
+          "target_topic": "anti-aging",
+          "relevance_score": 0.7925521346877613
+        },
+        {
+          "anchor_text": "learn more about what",
+          "target_topic": "what",
+          "relevance_score": 0.6146089804004724
+        }
+      ],
+      "serp_analysis": {
+        "avg_word_count": 2502.3,
+        "common_content_types": {
+          "news article": 4,
+          "video": 2,
+          "blog post": 2,
+          "guide": 1,
+          "product page": 1
+        },
+        "video_percentage": 0.5,
+        "avg_images": 9.1,
+        "readability_avg": 59.1014486044808
+      },
+      "content_depth": "Comprehensive",
+      "generated_date": "2025-11-27T14:29:21.089845",
+      "brief_id": "brief_003",
+      "markdown_version": "# Content Brief: anti-aging what\n\n## 📊 SEO Metrics\n- **Priority Score**: 0.86\n- **Search Volume**: 95884\n- **Difficulty**: 10/100\n- **Search Intent**: informational\n\n## 🎯 Target Word Count\n**2001 words**\n\n## 📝 Meta Description\nLearn everything about anti-aging what with our comprehensive guide. Discover best practices, tips, and step-by-step instructions.\n\n## 🏗️ Content Structure\n\n### H1 Heading\nThe Ultimate Guide to Anti-Aging What\n\n### H2 Headings\n- What is anti-aging?\n- Benefits of anti-aging what\n- How to Use anti-aging\n- Key Features and Specifications\n- Step-by-Step Implementation Guide\n- Common Challenges and Solutions\n- Best Practices and Tips\n- Frequently Asked Questions\n\n### H3 Headings\n- Getting Started\n- Advanced Techniques\n- Performance Optimization\n- Troubleshooting Common Issues\n\n## 🔗 Internal Linking Opportunities\n- **learn more about anti-aging** -> anti-aging (Relevance: 0.79)\n- **learn more about what** -> what (Relevance: 0.61)\n\n## 📈 SERP Analysis Insights\n- **Average Competitor Word Count**: 2502\n- **Recommended Content Depth**: Comprehensive\n- **Readability Target**: 59.1\n\n## 💡 Key Recommendations\n1. Focus on informational intent throughout the content\n2. Include visual elements: target 9.1 images\n3. Optimize for readability score ~59.1\n4. Cover all key aspects identified in competitor analysis\n\n---\n*Generated on 2025-11-27T14:29:21.089845*\n"
     },
     {
       "target_keyword": "skincare routine why",
-      "priority_score": 0.8141112567981916,
-      "search_volume": 71655,
+      "priority_score": 0.858068751195602,
+      "search_volume": 99280,
       "difficulty": 10,
       "intent": "informational",
-      "target_word_count": 1737,
+      "target_word_count": 1472,
       "meta_description": "Learn everything about skincare routine why with our comprehensive guide. Discover best practices, tips, and step-by-step instructions.",
       "headings": {
         "h1": [
@@ -96,106 +208,47 @@
         {
           "anchor_text": "learn more about routine",
           "target_topic": "routine",
-          "relevance_score": 0.8272803070055389
+          "relevance_score": 0.832009970333327
         },
         {
           "anchor_text": "learn more about skincare",
           "target_topic": "skincare",
-          "relevance_score": 0.7030463145785272
+          "relevance_score": 0.6635109805344483
         }
       ],
       "serp_analysis": {
-        "avg_word_count": 2171.3,
+        "avg_word_count": 1840.4,
         "common_content_types": {
-          "guide": 2,
-          "news article": 1,
+          "news article": 3,
           "blog post": 3,
-          "video": 2,
-          "product page": 2
-        },
-        "video_percentage": 0.6,
-        "avg_images": 10.6,
-        "readability_avg": 60.226114634280655
-      },
-      "content_depth": "Standard",
-      "generated_date": "2025-11-27T11:52:55.606816",
-      "brief_id": "brief_002",
-      "markdown_version": "# Content Brief: skincare routine why\n\n## 📊 SEO Metrics\n- **Priority Score**: 0.81\n- **Search Volume**: 71655\n- **Difficulty**: 10/100\n- **Search Intent**: informational\n\n## 🎯 Target Word Count\n**1737 words**\n\n## 📝 Meta Description\nLearn everything about skincare routine why with our comprehensive guide. Discover best practices, tips, and step-by-step instructions.\n\n## 🏗️ Content Structure\n\n### H1 Heading\nThe Ultimate Guide to Skincare Routine Why\n\n### H2 Headings\n- What is skincare?\n- Benefits of skincare routine why\n- How to Use skincare\n- Key Features and Specifications\n- Step-by-Step Implementation Guide\n- Common Challenges and Solutions\n- Best Practices and Tips\n- Frequently Asked Questions\n\n### H3 Headings\n- Getting Started\n- Advanced Techniques\n- Performance Optimization\n- Troubleshooting Common Issues\n\n## 🔗 Internal Linking Opportunities\n- **learn more about routine** -> routine (Relevance: 0.83)\n- **learn more about skincare** -> skincare (Relevance: 0.70)\n\n## 📈 SERP Analysis Insights\n- **Average Competitor Word Count**: 2171\n- **Recommended Content Depth**: Standard\n- **Readability Target**: 60.2\n\n## 💡 Key Recommendations\n1. Focus on informational intent throughout the content\n2. Include visual elements: target 10.6 images\n3. Optimize for readability score ~60.2\n4. Cover all key aspects identified in competitor analysis\n\n---\n*Generated on 2025-11-27T11:52:55.606816*\n"
-    },
-    {
-      "target_keyword": "how acne treatment",
-      "priority_score": 0.8091010301558998,
-      "search_volume": 88843,
-      "difficulty": 10,
-      "intent": "informational",
-      "target_word_count": 1840,
-      "meta_description": "Learn everything about how acne treatment with our comprehensive guide. Discover best practices, tips, and step-by-step instructions.",
-      "headings": {
-        "h1": [
-          "The Ultimate Guide to How Acne Treatment"
-        ],
-        "h2": [
-          "What is how?",
-          "Benefits of how acne treatment",
-          "How to Use how",
-          "Key Features and Specifications",
-          "Step-by-Step Implementation Guide",
-          "Common Challenges and Solutions",
-          "Best Practices and Tips",
-          "Frequently Asked Questions"
-        ],
-        "h3": [
-          "Getting Started",
-          "Advanced Techniques",
-          "Performance Optimization",
-          "Troubleshooting Common Issues"
-        ]
-      },
-      "internal_links": [
-        {
-          "anchor_text": "learn more about acne",
-          "target_topic": "acne",
-          "relevance_score": 0.7343579722186819
-        },
-        {
-          "anchor_text": "learn more about treatment",
-          "target_topic": "treatment",
-          "relevance_score": 0.6210404685040426
-        }
-      ],
-      "serp_analysis": {
-        "avg_word_count": 2300.0,
-        "common_content_types": {
-          "product page": 3,
-          "guide": 1,
-          "news article": 4,
           "video": 1,
-          "blog post": 1
+          "product page": 1,
+          "guide": 2
         },
-        "video_percentage": 0.5,
-        "avg_images": 8.9,
-        "readability_avg": 58.90799576250773
+        "video_percentage": 0.4,
+        "avg_images": 8.6,
+        "readability_avg": 57.44594231259091
       },
       "content_depth": "Standard",
-      "generated_date": "2025-11-27T11:52:55.606816",
-      "brief_id": "brief_003",
-      "markdown_version": "# Content Brief: how acne treatment\n\n## 📊 SEO Metrics\n- **Priority Score**: 0.81\n- **Search Volume**: 88843\n- **Difficulty**: 10/100\n- **Search Intent**: informational\n\n## 🎯 Target Word Count\n**1840 words**\n\n## 📝 Meta Description\nLearn everything about how acne treatment with our comprehensive guide. Discover best practices, tips, and step-by-step instructions.\n\n## 🏗️ Content Structure\n\n### H1 Heading\nThe Ultimate Guide to How Acne Treatment\n\n### H2 Headings\n- What is how?\n- Benefits of how acne treatment\n- How to Use how\n- Key Features and Specifications\n- Step-by-Step Implementation Guide\n- Common Challenges and Solutions\n- Best Practices and Tips\n- Frequently Asked Questions\n\n### H3 Headings\n- Getting Started\n- Advanced Techniques\n- Performance Optimization\n- Troubleshooting Common Issues\n\n## 🔗 Internal Linking Opportunities\n- **learn more about acne** -> acne (Relevance: 0.73)\n- **learn more about treatment** -> treatment (Relevance: 0.62)\n\n## 📈 SERP Analysis Insights\n- **Average Competitor Word Count**: 2300\n- **Recommended Content Depth**: Standard\n- **Readability Target**: 58.9\n\n## 💡 Key Recommendations\n1. Focus on informational intent throughout the content\n2. Include visual elements: target 8.9 images\n3. Optimize for readability score ~58.9\n4. Cover all key aspects identified in competitor analysis\n\n---\n*Generated on 2025-11-27T11:52:55.606816*\n"
+      "generated_date": "2025-11-27T14:29:21.089845",
+      "brief_id": "brief_004",
+      "markdown_version": "# Content Brief: skincare routine why\n\n## 📊 SEO Metrics\n- **Priority Score**: 0.86\n- **Search Volume**: 99280\n- **Difficulty**: 10/100\n- **Search Intent**: informational\n\n## 🎯 Target Word Count\n**1472 words**\n\n## 📝 Meta Description\nLearn everything about skincare routine why with our comprehensive guide. Discover best practices, tips, and step-by-step instructions.\n\n## 🏗️ Content Structure\n\n### H1 Heading\nThe Ultimate Guide to Skincare Routine Why\n\n### H2 Headings\n- What is skincare?\n- Benefits of skincare routine why\n- How to Use skincare\n- Key Features and Specifications\n- Step-by-Step Implementation Guide\n- Common Challenges and Solutions\n- Best Practices and Tips\n- Frequently Asked Questions\n\n### H3 Headings\n- Getting Started\n- Advanced Techniques\n- Performance Optimization\n- Troubleshooting Common Issues\n\n## 🔗 Internal Linking Opportunities\n- **learn more about routine** -> routine (Relevance: 0.83)\n- **learn more about skincare** -> skincare (Relevance: 0.66)\n\n## 📈 SERP Analysis Insights\n- **Average Competitor Word Count**: 1840\n- **Recommended Content Depth**: Standard\n- **Readability Target**: 57.4\n\n## 💡 Key Recommendations\n1. Focus on informational intent throughout the content\n2. Include visual elements: target 8.6 images\n3. Optimize for readability score ~57.4\n4. Cover all key aspects identified in competitor analysis\n\n---\n*Generated on 2025-11-27T14:29:21.089845*\n"
     },
     {
-      "target_keyword": "what anti-aging",
-      "priority_score": 0.7979319040393067,
-      "search_volume": 88289,
+      "target_keyword": "what skincare routine",
+      "priority_score": 0.8425724404041315,
+      "search_volume": 91213,
       "difficulty": 10,
       "intent": "informational",
-      "target_word_count": 1839,
-      "meta_description": "Learn everything about what anti-aging with our comprehensive guide. Discover best practices, tips, and step-by-step instructions.",
+      "target_word_count": 1837,
+      "meta_description": "Learn everything about what skincare routine with our comprehensive guide. Discover best practices, tips, and step-by-step instructions.",
       "headings": {
         "h1": [
-          "The Ultimate Guide to What Anti-Aging"
+          "The Ultimate Guide to What Skincare Routine"
         ],
         "h2": [
           "What is what?",
-          "Benefits of what anti-aging",
+          "Benefits of what skincare routine",
           "How to Use what",
           "Key Features and Specifications",
           "Step-by-Step Implementation Guide",
@@ -214,91 +267,38 @@
         {
           "anchor_text": "learn more about what",
           "target_topic": "what",
-          "relevance_score": 0.8535478295959323
+          "relevance_score": 0.8214039239988103
         },
         {
-          "anchor_text": "learn more about anti-aging",
-          "target_topic": "anti-aging",
-          "relevance_score": 0.6102046224176481
+          "anchor_text": "learn more about skincare",
+          "target_topic": "skincare",
+          "relevance_score": 0.7327244564358606
+        },
+        {
+          "anchor_text": "learn more about routine",
+          "target_topic": "routine",
+          "relevance_score": 0.6743263389518496
         }
       ],
       "serp_analysis": {
-        "avg_word_count": 2299.7,
+        "avg_word_count": 2296.5,
         "common_content_types": {
-          "news article": 3,
-          "video": 3,
+          "guide": 2,
+          "news article": 2,
           "blog post": 2,
-          "product page": 2
+          "video": 1,
+          "product page": 3
         },
-        "video_percentage": 0.4,
-        "avg_images": 8.0,
-        "readability_avg": 58.80849585983638
+        "video_percentage": 0.3,
+        "avg_images": 12.2,
+        "readability_avg": 60.05636400708264
       },
       "content_depth": "Standard",
-      "generated_date": "2025-11-27T11:52:55.606816",
-      "brief_id": "brief_004",
-      "markdown_version": "# Content Brief: what anti-aging\n\n## 📊 SEO Metrics\n- **Priority Score**: 0.80\n- **Search Volume**: 88289\n- **Difficulty**: 10/100\n- **Search Intent**: informational\n\n## 🎯 Target Word Count\n**1839 words**\n\n## 📝 Meta Description\nLearn everything about what anti-aging with our comprehensive guide. Discover best practices, tips, and step-by-step instructions.\n\n## 🏗️ Content Structure\n\n### H1 Heading\nThe Ultimate Guide to What Anti-Aging\n\n### H2 Headings\n- What is what?\n- Benefits of what anti-aging\n- How to Use what\n- Key Features and Specifications\n- Step-by-Step Implementation Guide\n- Common Challenges and Solutions\n- Best Practices and Tips\n- Frequently Asked Questions\n\n### H3 Headings\n- Getting Started\n- Advanced Techniques\n- Performance Optimization\n- Troubleshooting Common Issues\n\n## 🔗 Internal Linking Opportunities\n- **learn more about what** -> what (Relevance: 0.85)\n- **learn more about anti-aging** -> anti-aging (Relevance: 0.61)\n\n## 📈 SERP Analysis Insights\n- **Average Competitor Word Count**: 2300\n- **Recommended Content Depth**: Standard\n- **Readability Target**: 58.8\n\n## 💡 Key Recommendations\n1. Focus on informational intent throughout the content\n2. Include visual elements: target 8.0 images\n3. Optimize for readability score ~58.8\n4. Cover all key aspects identified in competitor analysis\n\n---\n*Generated on 2025-11-27T11:52:55.606816*\n"
-    },
-    {
-      "target_keyword": "why acne treatment",
-      "priority_score": 0.7848053011593628,
-      "search_volume": 60113,
-      "difficulty": 10,
-      "intent": "informational",
-      "target_word_count": 1591,
-      "meta_description": "Learn everything about why acne treatment with our comprehensive guide. Discover best practices, tips, and step-by-step instructions.",
-      "headings": {
-        "h1": [
-          "The Ultimate Guide to Why Acne Treatment"
-        ],
-        "h2": [
-          "What is why?",
-          "Benefits of why acne treatment",
-          "How to Use why",
-          "Key Features and Specifications",
-          "Step-by-Step Implementation Guide",
-          "Common Challenges and Solutions",
-          "Best Practices and Tips",
-          "Frequently Asked Questions"
-        ],
-        "h3": [
-          "Getting Started",
-          "Advanced Techniques",
-          "Performance Optimization",
-          "Troubleshooting Common Issues"
-        ]
-      },
-      "internal_links": [
-        {
-          "anchor_text": "learn more about acne",
-          "target_topic": "acne",
-          "relevance_score": 0.8317356812336867
-        },
-        {
-          "anchor_text": "learn more about treatment",
-          "target_topic": "treatment",
-          "relevance_score": 0.6177380968644808
-        }
-      ],
-      "serp_analysis": {
-        "avg_word_count": 1989.4,
-        "common_content_types": {
-          "guide": 1,
-          "news article": 3,
-          "blog post": 3,
-          "video": 2,
-          "product page": 1
-        },
-        "video_percentage": 0.6,
-        "avg_images": 10.1,
-        "readability_avg": 63.08398738928552
-      },
-      "content_depth": "Standard",
-      "generated_date": "2025-11-27T11:52:55.607812",
+      "generated_date": "2025-11-27T14:29:21.089845",
       "brief_id": "brief_005",
-      "markdown_version": "# Content Brief: why acne treatment\n\n## 📊 SEO Metrics\n- **Priority Score**: 0.78\n- **Search Volume**: 60113\n- **Difficulty**: 10/100\n- **Search Intent**: informational\n\n## 🎯 Target Word Count\n**1591 words**\n\n## 📝 Meta Description\nLearn everything about why acne treatment with our comprehensive guide. Discover best practices, tips, and step-by-step instructions.\n\n## 🏗️ Content Structure\n\n### H1 Heading\nThe Ultimate Guide to Why Acne Treatment\n\n### H2 Headings\n- What is why?\n- Benefits of why acne treatment\n- How to Use why\n- Key Features and Specifications\n- Step-by-Step Implementation Guide\n- Common Challenges and Solutions\n- Best Practices and Tips\n- Frequently Asked Questions\n\n### H3 Headings\n- Getting Started\n- Advanced Techniques\n- Performance Optimization\n- Troubleshooting Common Issues\n\n## 🔗 Internal Linking Opportunities\n- **learn more about acne** -> acne (Relevance: 0.83)\n- **learn more about treatment** -> treatment (Relevance: 0.62)\n\n## 📈 SERP Analysis Insights\n- **Average Competitor Word Count**: 1989\n- **Recommended Content Depth**: Standard\n- **Readability Target**: 63.1\n\n## 💡 Key Recommendations\n1. Focus on informational intent throughout the content\n2. Include visual elements: target 10.1 images\n3. Optimize for readability score ~63.1\n4. Cover all key aspects identified in competitor analysis\n\n---\n*Generated on 2025-11-27T11:52:55.607812*\n"
+      "markdown_version": "# Content Brief: what skincare routine\n\n## 📊 SEO Metrics\n- **Priority Score**: 0.84\n- **Search Volume**: 91213\n- **Difficulty**: 10/100\n- **Search Intent**: informational\n\n## 🎯 Target Word Count\n**1837 words**\n\n## 📝 Meta Description\nLearn everything about what skincare routine with our comprehensive guide. Discover best practices, tips, and step-by-step instructions.\n\n## 🏗️ Content Structure\n\n### H1 Heading\nThe Ultimate Guide to What Skincare Routine\n\n### H2 Headings\n- What is what?\n- Benefits of what skincare routine\n- How to Use what\n- Key Features and Specifications\n- Step-by-Step Implementation Guide\n- Common Challenges and Solutions\n- Best Practices and Tips\n- Frequently Asked Questions\n\n### H3 Headings\n- Getting Started\n- Advanced Techniques\n- Performance Optimization\n- Troubleshooting Common Issues\n\n## 🔗 Internal Linking Opportunities\n- **learn more about what** -> what (Relevance: 0.82)\n- **learn more about skincare** -> skincare (Relevance: 0.73)\n- **learn more about routine** -> routine (Relevance: 0.67)\n\n## 📈 SERP Analysis Insights\n- **Average Competitor Word Count**: 2296\n- **Recommended Content Depth**: Standard\n- **Readability Target**: 60.1\n\n## 💡 Key Recommendations\n1. Focus on informational intent throughout the content\n2. Include visual elements: target 12.2 images\n3. Optimize for readability score ~60.1\n4. Cover all key aspects identified in competitor analysis\n\n---\n*Generated on 2025-11-27T14:29:21.089845*\n"
     }
   ],
   "total_briefs_generated": 5,
-  "generation_timestamp": "2025-11-27T11:52:55.607812"
+  "generation_timestamp": "2025-11-27T14:29:21.089845"
 }

@@ -1288,5 +1288,67 @@
       "keyword": "marketing",
       "word_count": 1500
     }
+  },
+  {
+    "content_quality_score": 84.86790639279917,
+    "brand_voice_similarity": 0.85,
+    "keyword_density": 0.7782101167315175,
+    "readability_score": 60.40169923841205,
+    "word_count_accuracy": 97.2,
+    "generation_time": 37.490713119506836,
+    "heading_structure_score": 1.0,
+    "seo_requirements_score": 0.8333333333333334,
+    "details": {
+      "actual_word_count": 1028,
+      "target_word_count": 1000,
+      "keyword_occurrences": 8,
+      "heading_hierarchy_issues": [],
+      "seo_checklist": {
+        "keyword_in_title": false,
+        "keyword_in_meta": true,
+        "keyword_in_intro": true,
+        "keyword_in_conclusion": true,
+        "has_meta_description": true,
+        "meta_description_length_ok": true
+      }
+    },
+    "timestamp": "2025-11-27T12:51:29.760604",
+    "passes_requirements": false,
+    "metadata": {
+      "topic": "Skincare Products for Acne-Prone Skin",
+      "keyword": "skincare routine acne",
+      "word_count": 1000
+    }
+  },
+  {
+    "content_quality_score": 82.91398861042195,
+    "brand_voice_similarity": 0.85,
+    "keyword_density": 0.7021063189568706,
+    "readability_score": 60.81358870967742,
+    "word_count_accuracy": 99.7,
+    "generation_time": 40.7744038105011,
+    "heading_structure_score": 1.0,
+    "seo_requirements_score": 0.8333333333333334,
+    "details": {
+      "actual_word_count": 997,
+      "target_word_count": 1000,
+      "keyword_occurrences": 7,
+      "heading_hierarchy_issues": [],
+      "seo_checklist": {
+        "keyword_in_title": false,
+        "keyword_in_meta": true,
+        "keyword_in_intro": true,
+        "keyword_in_conclusion": true,
+        "has_meta_description": true,
+        "meta_description_length_ok": true
+      }
+    },
+    "timestamp": "2025-11-27T13:53:41.932990",
+    "passes_requirements": false,
+    "metadata": {
+      "topic": "BHAs for glowy skin",
+      "keyword": "skincare routine informational",
+      "word_count": 1000
+    }
   }
 ]
